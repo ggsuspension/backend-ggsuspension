@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ExpenseCategory extends Model
+{
+    protected $table = 'expense_categories';
+    protected $fillable = ['name', 'monthly_cost', 'daily_cost'];
+
+    protected $casts = [
+        'daily_cost' => 'decimal:2',
+        'monthly_cost' => 'decimal:2',
+    ];
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    public function gerais()
+    {
+        return $this->belongsToMany(Gerai::class, 'expense_category_gerai')
+            ->withPivot('daily_cost', 'monthly_cost')
+            ->withTimestamps();
+    }
+}
