@@ -5,71 +5,144 @@ namespace App\Http\Controllers;
 use App\Jobs\CalculateDailyNetRevenue;
 use App\Models\DailyNetRevenue;
 use App\Models\Expense;
+use App\Models\Gerai;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class ExpenseController extends Controller
 {
     public function getAllExpenses(Request $request)
     {
         try {
-            $data = Expense::where("gerai_id", $request->gerai_id)->whereBetween('date', [$request->start_date, $request->end_date])->get();
-            return response()->json($data);
+            $geraiId = $request->query('gerai_id');
+            $startDate = $request->query('startDate');
+            $endDate = $request->query('endDate');
+
+            // Validasi parameter
+            if (!$geraiId || !$startDate || !$endDate) {
+                Log::error('Missing required parameters for getAllExpenses', [
+                    'gerai_id' => $geraiId,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                ]);
+                return response()->json(['error' => 'Missing required parameters'], 400);
+            }
+
+            // Konversi tanggal untuk memastikan format yang benar
+            $startDate = \Carbon\Carbon::parse($startDate)->startOfDay();
+            $endDate = \Carbon\Carbon::parse($endDate)->endOfDay();
+
+            Log::info('Fetching expenses with parameters:', [
+                'gerai_id' => $geraiId,
+                'start_date' => $startDate->toDateTimeString(),
+                'end_date' => $endDate->toDateTimeString(),
+            ]);
+
+            $data = Expense::where('gerai_id', $geraiId)
+                ->whereBetween('date', [$startDate, $endDate])
+                ->get();
+
+            Log::info('Expenses fetched:', [
+                'count' => $data->count(),
+                'data' => $data->toArray(),
+            ]);
+
+            // Bungkus data dalam format yang konsisten
+            return response()->json(['data' => $data]);
         } catch (\Exception $e) {
-            Log::error('Get All Expenses failed:', ['error' => $e->getMessage()]);
-            return response()->json(['error' => $e->getMessage()], 500);
+            Log::error('Get All Expenses failed:', [
+                'error' => $e->getMessage(),
+                'gerai_id' => $geraiId ?? null,
+                'start_date' => $startDate ?? null,
+                'end_date' => $endDate ?? null,
+            ]);
+            return response()->json(['error' => 'Failed to fetch expenses: ' . $e->getMessage()], 500);
         }
     }
 
-    public function getExpenseById(Request $request, $id)
+    public function getAllExpensesAll(Request $request)
     {
         try {
-            $expense = Expense::with(['gerai', 'expenseCategory'])
-                ->select('id', 'gerai_id', 'expense_category_id', 'description', 'amount', 'date', 'created_at', 'updated_at')
-                ->findOrFail($id);
-
-            $netRevenue = $expense->gerai_id ? DailyNetRevenue::where('gerai_id', $expense->gerai_id)
-                ->where('date', $expense->date->format('Y-m-d'))
-                ->first() : null;
-
-            return response()->json([
-                'id' => $expense->id,
-                'geraiId' => $expense->gerai_id,
-                'expenseCategoryId' => $expense->expense_category_id,
-                'description' => $expense->description,
-                'amount' => (float) $expense->amount,
-                'date' => $expense->date->format('Y-m-d\TH:i:s.v\Z'),
-                'gerai' => $expense->gerai ? [
-                    'id' => $expense->gerai->id,
-                    'name' => $expense->gerai->name,
-                    'location' => $expense->gerai->location,
-                    'totalRevenue' => $netRevenue ? (float) $netRevenue->total_revenue : 0,
-                    'totalExpenses' => $netRevenue ? (float) $netRevenue->total_expenses : 0,
-                    'netRevenue' => $netRevenue ? (float) $netRevenue->net_revenue : 0,
-                    'createdAt' => $expense->gerai->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                    'updatedAt' => $expense->gerai->updated_at->format('Y-m-d\TH:i:s.v\Z'),
-                ] : null,
-                'expenseCategory' => [
-                    'id' => $expense->expenseCategory->id,
-                    'name' => $expense->expenseCategory->name,
-                    'createdAt' => $expense->expenseCategory->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                    'updatedAt' => $expense->expenseCategory->updated_at->format('Y-m-d\TH:i:s.v\Z'),
-                ],
-                'createdAt' => $expense->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                'updatedAt' => $expense->updated_at->format('Y-m-d\TH:i:s.v\Z'),
+            $validated = $request->validate([
+                'startDate' => 'required|date',
+                'endDate' => 'required|date|after_or_equal:startDate',
             ]);
-        } catch (\Exception $e) {
-            Log::error('Get Expense failed:', ['id' => $id, 'error' => $e->getMessage()]);
-            return response()->json(['error' => 'Pengeluaran tidak ditemukan'], 404);
+
+            $startDate = Carbon::parse($validated['startDate'])->startOfDay();
+            $endDate = Carbon::parse($validated['endDate'])->endOfDay();
+            $cacheKey = "expenses_all_{$startDate->toDateString()}_{$endDate->toDateString()}";
+
+            Log::info('getAllExpensesAll called', [
+                'startDate' => $startDate->toDateString(),
+                'endDate' => $endDate->toDateString(),
+                'request_ip' => $request->ip(),
+                'user_role' => JWTAuth::user()->role ?? 'unknown',
+            ]);
+
+            Cache::forget($cacheKey);
+
+            $expenses = Expense::whereBetween('date', [$startDate, $endDate])
+                ->select('id', 'gerai_id', 'amount', 'description', 'date', 'category', 'created_at', 'updated_at')
+                ->get();
+
+            Log::info('Expenses query result', [
+                'count' => $expenses->count(),
+                'data' => $expenses->toArray(),
+            ]);
+
+            $groupedData = $expenses->groupBy('gerai_id')->map(function ($group, $geraiId) {
+                $gerai = Gerai::find($geraiId);
+                return [
+                    'gerai_id' => (int) $geraiId,
+                    'gerai' => $gerai ? $gerai->name : 'Unknown',
+                    'data' => $group->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'gerai_id' => $item->gerai_id,
+                            'amount' => (float) $item->amount,
+                            'description' => $item->description,
+                            'date' => $item->date->toDateTimeString(),
+                            'category' => $item->category,
+                            'created_at' => $item->created_at->toDateTimeString(),
+                            'updated_at' => $item->updated_at->toDateTimeString(),
+                        ];
+                    })->values(),
+                ];
+            })->values();
+
+            Log::info('getAllExpensesAll result', [
+                'data' => $groupedData->toArray(),
+                'total_items' => $groupedData->count(),
+            ]);
+
+            return response()->json(['data' => $groupedData]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed in getAllExpensesAll', [
+                'errors' => $e->errors(),
+                'startDate' => $request->query('startDate'),
+                'endDate' => $request->query('endDate'),
+            ]);
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Throwable $e) {
+            Log::error('Error in getAllExpensesAll: ' . $e->getMessage(), [
+                'startDate' => $request->query('startDate'),
+                'endDate' => $request->query('endDate'),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['error' => 'Gagal mengambil data pengeluaran semua gerai'], 500);
         }
     }
+
 
     public function createExpense(Request $request)
     {
         return DB::transaction(function () use ($request) {
             try {
+                Log::info("Creating expense", ['request' => $request->all()]);
                 $validated = $request->validate([
                     'geraiId' => 'nullable|exists:gerais,id',
                     'category' => 'required|string',
@@ -87,9 +160,14 @@ class ExpenseController extends Controller
                 ]);
 
                 if ($validated['geraiId']) {
-                    // Ubah ke dispatchSync untuk real-time
+                    Log::info("Dispatching CalculateDailyNetRevenue", [
+                        'geraiId' => $validated['geraiId'],
+                        'date' => $validated['date'],
+                    ]);
                     CalculateDailyNetRevenue::dispatchSync($validated['geraiId'], $validated['date']);
                 }
+
+                Log::info("Expense created successfully", ['expense_id' => $expense->id]);
 
                 return response()->json([
                     'id' => $expense->id,
@@ -98,22 +176,17 @@ class ExpenseController extends Controller
                     'description' => $expense->description,
                     'amount' => (float) $expense->amount,
                     'date' => $expense->date->format('Y-m-d\TH:i:s.v\Z'),
-                    'gerai' => $expense->gerai ? [
-                        'id' => $expense->gerai->id,
-                        'name' => $expense->gerai->name,
-                        'location' => $expense->gerai->location,
-                        'totalRevenue' => (float) ($expense->gerai->total_revenue ?? 0),
-                        'totalExpenses' => (float) ($expense->gerai->total_expenses ?? 0),
-                        'netRevenue' => (float) ($expense->gerai->net_revenue ?? 0),
-                        'createdAt' => $expense->gerai->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                        'updatedAt' => $expense->gerai->updated_at->format('Y-m-d\TH:i:s.v\Z'),
-                    ] : null,
-                    'createdAt' => $expense->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                    'updatedAt' => $expense->updated_at->format('Y-m-d\TH:i:s.v\Z'),
                 ], 201);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                Log::error('Validation failed:', ['errors' => $e->errors(), 'request' => $request->all()]);
+                return response()->json(['error' => $e->errors()], 422);
             } catch (\Exception $e) {
-                Log::error('Create expense failed:', ['error' => $e->getMessage()]);
-                return response()->json(['error' => $e], 500);
+                Log::error('Create expense failed:', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'request' => $request->all(),
+                ]);
+                return response()->json(['error' => $e->getMessage()], 500);
             }
         });
     }
@@ -122,99 +195,86 @@ class ExpenseController extends Controller
     {
         return DB::transaction(function () use ($request, $id) {
             try {
-                $expense = Expense::findOrFail($id);
+                Log::info("Updating expense", ['id' => $id, 'request' => $request->all()]);
 
                 $validated = $request->validate([
                     'geraiId' => 'nullable|exists:gerais,id',
-                    'expenseCategoryId' => 'sometimes|exists:expense_categories,id',
-                    'description' => 'sometimes|nullable|string',
-                    'amount' => 'sometimes|numeric|min:0',
-                    'date' => 'sometimes|date',
+                    'category' => 'required|string',
+                    'description' => 'nullable|string|max:255',
+                    'amount' => 'required|numeric|min:0',
+                    'date' => 'required|date',
                 ]);
 
-                $oldDate = $expense->date;
+                $expense = Expense::findOrFail($id);
+
                 $oldGeraiId = $expense->gerai_id;
+                $oldDate = $expense->date->toDateString();
 
                 $expense->update([
-                    'gerai_id' => $validated['geraiId'] ?? $expense->gerai_id,
-                    'expense_category_id' => $validated['expenseCategoryId'] ?? $expense->expense_category_id,
-                    'description' => $validated['description'] ?? $expense->description,
-                    'amount' => $validated['amount'] ?? $expense->amount,
-                    'date' => isset($validated['date']) ? Carbon::parse($validated['date'])->startOfDay() : $expense->date,
+                    'gerai_id' => $validated['geraiId'],
+                    'category' => $validated['category'],
+                    'description' => $validated['description'] ?? 'Biaya tanpa deskripsi',
+                    'amount' => $validated['amount'],
+                    'date' => Carbon::parse($validated['date'])->startOfDay(),
                 ]);
 
-                // Dispatch job untuk gerai_id lama dan baru jika relevan
-                if (
-                    isset($validated['amount']) ||
-                    isset($validated['date']) ||
-                    (isset($validated['geraiId']) && $validated['geraiId'] !== $oldGeraiId)
-                ) {
-                    if ($oldGeraiId) {
-                        CalculateDailyNetRevenue::dispatch($oldGeraiId, $oldDate->toDateString());
-                    }
-                    if ($expense->gerai_id) {
-                        CalculateDailyNetRevenue::dispatch($expense->gerai_id, $expense->date->toDateString());
-                    }
+                // Trigger update pendapatan harian jika gerai_id atau date berubah
+                $newGeraiId = $validated['geraiId'];
+                $newDate = Carbon::parse($validated['date'])->toDateString();
+
+                if ($oldGeraiId && $oldDate !== $newDate) {
+                    CalculateDailyNetRevenue::dispatch($oldGeraiId, $oldDate);
+                }
+                if ($newGeraiId) {
+                    CalculateDailyNetRevenue::dispatch($newGeraiId, $newDate);
                 }
 
-                $expense->load(['gerai', 'expenseCategory']);
-                $netRevenue = $expense->gerai_id ? DailyNetRevenue::where('gerai_id', $expense->gerai_id)
-                    ->where('date', $expense->date->format('Y-m-d'))
-                    ->first() : null;
+                Log::info("Expense updated successfully", ['id' => $expense->id]);
 
                 return response()->json([
                     'id' => $expense->id,
                     'geraiId' => $expense->gerai_id,
-                    'expenseCategoryId' => $expense->expense_category_id,
+                    'category' => $expense->category,
                     'description' => $expense->description,
                     'amount' => (float) $expense->amount,
                     'date' => $expense->date->format('Y-m-d\TH:i:s.v\Z'),
-                    'gerai' => $expense->gerai ? [
-                        'id' => $expense->gerai->id,
-                        'name' => $expense->gerai->name,
-                        'location' => $expense->gerai->location,
-                        'totalRevenue' => $netRevenue ? (float) $netRevenue->total_revenue : 0,
-                        'totalExpenses' => $netRevenue ? (float) $netRevenue->total_expenses : 0,
-                        'netRevenue' => $netRevenue ? (float) $netRevenue->net_revenue : 0,
-                        'createdAt' => $expense->gerai->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                        'updatedAt' => $expense->gerai->updated_at->format('Y-m-d\TH:i:s.v\Z'),
-                    ] : null,
-                    'expenseCategory' => [
-                        'id' => $expense->expenseCategory->id,
-                        'name' => $expense->expenseCategory->name,
-                        'createdAt' => $expense->expenseCategory->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                        'updatedAt' => $expense->expenseCategory->updated_at->format('Y-m-d\TH:i:s.v\Z'),
-                    ],
-                    'createdAt' => $expense->created_at->format('Y-m-d\TH:i:s.v\Z'),
-                    'updatedAt' => $expense->updated_at->format('Y-m-d\TH:i:s.v\Z'),
                 ]);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                Log::error('Validation failed in updateExpense', ['errors' => $e->errors(), 'request' => $request->all()]);
+                return response()->json(['error' => $e->errors()], 422);
             } catch (\Exception $e) {
-                Log::error('Update Expense failed:', ['id' => $id, 'error' => $e->getMessage()]);
-                return response()->json(['error' => 'Gagal memperbarui pengeluaran'], $e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ? 404 : 500);
+                Log::error('Update expense failed', [
+                    'id' => $id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+                return response()->json(['error' => 'Gagal memperbarui pengeluaran'], 500);
             }
         });
     }
 
-    public function deleteExpense(Request $request, $id)
+
+    public function deleteExpense($id)
     {
         return DB::transaction(function () use ($id) {
             try {
                 $expense = Expense::findOrFail($id);
-
                 $geraiId = $expense->gerai_id;
                 $date = $expense->date->toDateString();
 
                 $expense->delete();
 
-                // Dispatch job jika gerai_id tidak null
                 if ($geraiId) {
                     CalculateDailyNetRevenue::dispatch($geraiId, $date);
                 }
 
-                return response()->json(null, 204);
+                return response()->json(['message' => 'Pengeluaran berhasil dihapus']);
             } catch (\Exception $e) {
-                Log::error('Delete Expense failed:', ['id' => $id, 'error' => $e->getMessage()]);
-                return response()->json(['error' => 'Gagal menghapus pengeluaran'], $e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException ? 404 : 500);
+                Log::error('Failed to delete expense', [
+                    'id' => $id,
+                    'error' => $e->getMessage(),
+                ]);
+                return response()->json(['error' => 'Gagal menghapus pengeluaran'], 500);
             }
         });
     }

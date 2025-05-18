@@ -2,61 +2,71 @@
 
 namespace App\Jobs;
 
+use App\Models\Customer;
 use App\Models\DailyNetRevenue;
-use App\Models\Gerai;
-use App\Models\Order;
 use App\Models\Expense;
+use App\Models\Gerai;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CalculateDailyNetRevenue implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $geraiId;
-    protected $date;
+    public function __construct(
+        public int $geraiId,
+        public string $date
+    ) {}
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(int $geraiId, string $date)
-    {
-        $this->geraiId = $geraiId;
-        $this->date = $date;
-    }
-
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         try {
+            Log::info("Starting CalculateDailyNetRevenue", [
+                'gerai_id' => $this->geraiId,
+                'date' => $this->date,
+            ]);
+
             $startOfDay = Carbon::parse($this->date)->startOfDay();
-            $endOfDay = $startOfDay->copy()->endOfDay();
+            $endOfDay = $startOfDay->clone()->endOfDay();
+            $cacheKey = "daily_net_revenue_{$this->geraiId}_{$startOfDay->toDateString()}";
 
-            // Hitung total pendapatan dari order
-            $totalRevenue = Order::where('gerai_id', $this->geraiId)
-                ->whereBetween('created_at', [$startOfDay, $endOfDay])
-                ->where('status', 'FINISHED')
-                ->sum('total_harga');
+            Cache::forget($cacheKey);
 
-            // Hitung total pengeluaran dari expense
+            $gerai = Gerai::find($this->geraiId);
+            if (!$gerai) {
+                Log::warning("Gerai not found", ['gerai_id' => $this->geraiId]);
+                return;
+            }
+
+            $totalRevenue = Customer::where('gerai', $gerai->name)
+                ->where('status', 'FINISH')
+                ->whereBetween('updated_at', [$startOfDay, $endOfDay])
+                ->select(DB::raw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total'))
+                ->value('total') ?? 0;
+
             $totalExpenses = Expense::where('gerai_id', $this->geraiId)
                 ->whereBetween('date', [$startOfDay, $endOfDay])
-                ->sum('amount');
+                ->sum('amount') ?? 0;
 
             $netRevenue = $totalRevenue - $totalExpenses;
 
-            // Simpan atau perbarui DailyNetRevenue
+            Log::info("Calculation result", [
+                'total_revenue' => $totalRevenue,
+                'total_expenses' => $totalExpenses,
+                'net_revenue' => $netRevenue,
+            ]);
+
             DailyNetRevenue::updateOrCreate(
                 [
                     'gerai_id' => $this->geraiId,
-                    'date' => $startOfDay,
+                    'date' => $startOfDay->toDateString(),
                 ],
                 [
                     'total_revenue' => $totalRevenue,
@@ -65,10 +75,18 @@ class CalculateDailyNetRevenue implements ShouldQueue
                 ]
             );
 
-            Log::info("DailyNetRevenue calculated for gerai_id: {$this->geraiId}, date: {$startOfDay->toDateString()}");
-        } catch (\Exception $e) {
-            Log::error("Error calculating DailyNetRevenue for gerai_id: {$this->geraiId}: " . $e->getMessage());
-            throw $e; // Biarkan job gagal untuk ditangani ulang (jika configured)
+            Log::info("DailyNetRevenue updated", [
+                'gerai_id' => $this->geraiId,
+                'date' => $startOfDay->toDateString(),
+                'total_expenses' => $totalExpenses,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error("Error in CalculateDailyNetRevenue: " . $e->getMessage(), [
+                'gerai_id' => $this->geraiId,
+                'date' => $this->date,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
         }
     }
 }

@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\CalculateDailyNetRevenue;
+use App\Models\Customer;
 use App\Models\DailyNetRevenue;
 use App\Models\Gerai;
-use App\Models\Order;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class DailyNetRevenueController extends Controller
 {
@@ -25,6 +27,7 @@ class DailyNetRevenueController extends Controller
 
         try {
             $netRevenue = $validated['total_revenue'] - $validated['total_expenses'];
+
             $revenue = DailyNetRevenue::updateOrCreate(
                 [
                     'gerai_id' => $validated['gerai_id'],
@@ -38,7 +41,7 @@ class DailyNetRevenueController extends Controller
             );
 
             return response()->json($revenue->load('gerai'), 201);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error creating DailyNetRevenue: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal membuat DailyNetRevenue'], 500);
         }
@@ -54,19 +57,19 @@ class DailyNetRevenueController extends Controller
         try {
             $date = Carbon::parse($validated['date'])->startOfDay();
             $batchSize = $validated['batchSize'] ?? 50;
-            $geraiList = Gerai::select('id')->get()->toArray();
 
-            // Dispatch job untuk setiap gerai
+            $geraiList = Gerai::pluck('id')->toArray();
+
             foreach (array_chunk($geraiList, $batchSize) as $batch) {
-                foreach ($batch as $gerai) {
-                    CalculateDailyNetRevenue::dispatch($gerai['id'], $date->toDateString());
+                foreach ($batch as $geraiId) {
+                    CalculateDailyNetRevenue::dispatch($geraiId, $date->toDateString());
                 }
             }
 
             return response()->json([
                 'message' => 'Perhitungan DailyNetRevenue untuk semua gerai telah dijadwalkan.',
-            ], 202); // Status 202 Accepted karena proses berjalan di latar belakang
-        } catch (\Exception $e) {
+            ], 202);
+        } catch (\Throwable $e) {
             Log::error('Error scheduling DailyNetRevenue calculation: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal menjadwalkan perhitungan DailyNetRevenue'], 500);
         }
@@ -84,22 +87,31 @@ class DailyNetRevenueController extends Controller
             $endOfDay = $date->copy()->endOfDay();
             $geraiId = $validated['gerai_id'] ?? null;
 
-            if ($geraiId) {
-                $totalRevenue = Order::where('gerai_id', $geraiId)
-                    ->whereBetween('created_at', [$date, $endOfDay])
-                    ->where('status', 'FINISHED')
-                    ->sum('total_harga');
+            $geraiList = $geraiId ? [Gerai::find($geraiId)] : Gerai::all();
+            if (empty($geraiList)) {
+                return response()->json(['message' => 'Tidak ada gerai ditemukan'], 404);
+            }
 
-                $totalExpenses = Expense::where('gerai_id', $geraiId)
+            $results = [];
+            foreach ($geraiList as $gerai) {
+                if (!$gerai) continue;
+
+                $totalRevenue = Customer::where('gerai', $gerai->name)
+                    ->where('status', 'FINISH')
+                    ->whereBetween('updated_at', [$date, $endOfDay])
+                    ->select(DB::raw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total'))
+                    ->value('total') ?? 0;
+
+                $totalExpenses = Expense::where('gerai_id', $gerai->id)
                     ->whereBetween('date', [$date, $endOfDay])
-                    ->sum('amount');
+                    ->sum('amount') ?? 0;
 
                 $netRevenue = $totalRevenue - $totalExpenses;
 
                 $revenue = DailyNetRevenue::updateOrCreate(
                     [
-                        'gerai_id' => $geraiId,
-                        'date' => $date,
+                        'gerai_id' => $gerai->id,
+                        'date' => $date->toDateString(),
                     ],
                     [
                         'total_revenue' => $totalRevenue,
@@ -108,51 +120,17 @@ class DailyNetRevenueController extends Controller
                     ]
                 );
 
-                $results = [$revenue];
-            } else {
-                $geraiList = Gerai::select('id')->get()->toArray();
-                $results = [];
-
-                foreach ($geraiList as $gerai) {
-                    $totalRevenue = Order::where('gerai_id', $gerai['id'])
-                        ->whereBetween('created_at', [$date, $endOfDay])
-                        ->where('status', 'FINISHED')
-                        ->sum('total_harga');
-
-                    $totalExpenses = Expense::where('gerai_id', $gerai['id'])
-                        ->whereBetween('date', [$date, $endOfDay])
-                        ->sum('amount');
-
-                    $netRevenue = $totalRevenue - $totalExpenses;
-
-                    $revenue = DailyNetRevenue::updateOrCreate(
-                        [
-                            'gerai_id' => $gerai['id'],
-                            'date' => $date,
-                        ],
-                        [
-                            'total_revenue' => $totalRevenue,
-                            'total_expenses' => $totalExpenses,
-                            'net_revenue' => $netRevenue,
-                        ]
-                    );
-
-                    $results[] = $revenue;
-                }
+                $results[] = $revenue->load('gerai');
             }
 
-            $data = DailyNetRevenue::with('gerai')
-                ->whereBetween('date', [$date, $endOfDay])
-                ->when($geraiId, fn($q) => $q->where('gerai_id', $geraiId))
-                ->get()
-                ->map(fn($revenue) => [
-                    'date' => $revenue->date->toDateString(),
-                    'gerai' => $revenue->gerai->name ?? 'Unknown',
-                    'net_revenue' => $revenue->net_revenue ?? 0,
-                ]);
+            $data = collect($results)->map(fn($item) => [
+                'date' => $item->date->toDateString(),
+                'gerai' => $item->gerai->name ?? 'Unknown',
+                'net_revenue' => number_format($item->net_revenue, 2, '.', ''),
+            ]);
 
             return response()->json(['data' => $data]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error in getOrCalculateDailyNetRevenue: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal menghitung data harian'], 500);
         }
@@ -162,30 +140,222 @@ class DailyNetRevenueController extends Controller
     {
         $validated = $request->validate([
             'startDate' => 'required|date',
-            'endDate' => 'required|date|after_or_equal:startDate',
-            'gerai_id' => 'nullable|integer|exists:gerais,id',
+            'endDate' => 'required|date',
+            'gerai_id' => 'required|exists:gerais,id',
         ]);
-        $data = DailyNetRevenue::where('daily_net_revenues.gerai_id', $validated['gerai_id']);
 
-        return response()->json([
-            'data' => $data,
-            'pagination' => [
-                'page' => 1,
-                'limit' => $data->count(),
-                'totalItems' => $data->count(),
-                'totalPages' => 1,
-            ],
-        ]);
+        try {
+            $startDate = Carbon::parse($validated['startDate'])->startOfDay();
+            $endDate = Carbon::parse($validated['endDate'])->endOfDay();
+
+            Log::info('getDailyTrend called', [
+                'startDate' => $startDate->toDateTimeString(),
+                'endDate' => $endDate->toDateTimeString(),
+                'gerai_id' => $validated['gerai_id'],
+                'request_ip' => $request->ip(),
+            ]);
+
+            $data = DailyNetRevenue::where('gerai_id', $validated['gerai_id'])
+                ->whereBetween('date', [$startDate, $endDate])
+                ->with('gerai')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'gerai_id' => $item->gerai_id,
+                        'date' => $item->date->toIso8601String(),
+                        'total_revenue' => number_format($item->total_revenue, 2, '.', ''),
+                        'total_expenses' => number_format($item->total_expenses, 2, '.', ''),
+                        'net_revenue' => number_format($item->net_revenue, 2, '.', ''),
+                        'created_at' => $item->created_at->toIso8601String(),
+                        'updated_at' => $item->updated_at->toIso8601String(),
+                        'gerai' => $item->gerai ? [
+                            'id' => $item->gerai->id,
+                            'name' => $item->gerai->name,
+                            'location' => $item->gerai->location,
+                            'created_at' => $item->gerai->created_at->toIso8601String(),
+                            'updated_at' => $item->gerai->updated_at->toIso8601String(),
+                        ] : null,
+                    ];
+                });
+
+            Log::info('getDailyTrend result', [
+                'data' => $data->toArray(),
+                'total_items' => $data->count(),
+            ]);
+
+            return response()->json([
+                'data' => $data,
+                'pagination' => [
+                    'page' => 1,
+                    'limit' => 50,
+                    'totalItems' => $data->count(),
+                    'totalPages' => 1,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('Error in getDailyTrend: ' . $e->getMessage(), [
+                'startDate' => $validated['startDate'],
+                'endDate' => $validated['endDate'],
+                'gerai_id' => $validated['gerai_id'],
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['error' => 'Gagal mengambil data tren harian'], 500);
+        }
     }
 
+    public function dailyTrendAll(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'startDate' => 'required|date',
+                'endDate' => 'required|date|after_or_equal:startDate',
+            ]);
+
+            $startDate = Carbon::parse($validated['startDate'])->startOfDay();
+            $endDate = Carbon::parse($validated['endDate'])->endOfDay();
+            $cacheKey = "daily_trend_all_{$startDate->toDateString()}_{$endDate->toDateString()}";
+
+            Log::info('dailyTrendAll called', [
+                'startDate' => $startDate->toDateString(),
+                'endDate' => $endDate->toDateString(),
+                'request_ip' => $request->ip(),
+            ]);
+
+            Cache::forget($cacheKey); // Hapus cache untuk data terbaru
+
+            $data = DailyNetRevenue::query()
+                ->whereBetween('date', [$startDate, $endDate])
+                ->select('date', 'net_revenue', 'gerai_id')
+                ->with('gerai:id,name')
+                ->get();
+
+            Log::info('DailyNetRevenue query result', [
+                'count' => $data->count(),
+                'data' => $data->toArray(),
+            ]);
+
+            $groupedData = $data->groupBy('gerai_id')->map(function ($group, $geraiId) {
+                $geraiName = $group->first()->gerai ? $group->first()->gerai->name : 'Unknown';
+                return [
+                    'gerai_id' => (int) $geraiId,
+                    'gerai' => $geraiName,
+                    'data' => $group->map(function ($item) {
+                        return [
+                            'date' => $item->date->toDateString(),
+                            'netRevenue' => (float) $item->net_revenue,
+                        ];
+                    })->values(),
+                ];
+            })->values();
+
+            Log::info('dailyTrendAll result', [
+                'data' => $groupedData->toArray(),
+                'total_items' => $groupedData->count(),
+            ]);
+
+            return response()->json(['data' => $groupedData]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed in dailyTrendAll', [
+                'errors' => $e->errors(),
+                'startDate' => $request->query('startDate'),
+                'endDate' => $request->query('endDate'),
+            ]);
+            return response()->json(['error' => $e->errors()], 422);
+        } catch (\Throwable $e) {
+            Log::error('Error in dailyTrendAll: ' . $e->getMessage(), [
+                'startDate' => $request->query('startDate'),
+                'endDate' => $request->query('endDate'),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['error' => 'Gagal mengambil tren harian'], 500);
+        }
+    }
 
     public function getIncomeExpenseDaily(Request $request): JsonResponse
     {
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'gerai_id' => 'required|exists:gerais,id',
+        ]);
+
         try {
-            $data = DailyNetRevenue::where('date', $request->date)->where('gerai_id', $request->gerai_id)->get()->toArray();
+            $date = Carbon::parse($validated['date'])->startOfDay();
+            $geraiId = $validated['gerai_id'];
+
+            Log::info('getIncomeExpenseDaily called', [
+                'date' => $date->toDateString(),
+                'gerai_id' => $geraiId,
+            ]);
+
+            // Coba ambil data dari tabel
+            $data = DailyNetRevenue::where('date', $date->toDateString())
+                ->where('gerai_id', $geraiId)
+                ->with('gerai')
+                ->get();
+
+            Log::info('Query result', ['data' => $data->toArray()]);
+
+            // Jika data kosong, hitung ulang
+            if ($data->isEmpty()) {
+                $gerai = Gerai::find($geraiId);
+                if (!$gerai) {
+                    Log::error('Gerai tidak ditemukan', ['gerai_id' => $geraiId]);
+                    return response()->json(['error' => 'Gerai tidak ditemukan'], 404);
+                }
+
+                $endOfDay = $date->copy()->endOfDay();
+
+                // Hitung total pendapatan dari customers
+                $totalRevenue = Customer::where('gerai', $gerai->name)
+                    ->where('status', 'FINISH')
+                    ->whereBetween('updated_at', [$date, $endOfDay])
+                    ->select(DB::raw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total'))
+                    ->value('total') ?? 0;
+
+                // Hitung total pengeluaran dari expenses
+                $totalExpenses = Expense::where('gerai_id', $geraiId)
+                    ->whereBetween('date', [$date, $endOfDay])
+                    ->sum('amount') ?? 0;
+
+                Log::info('Calculated data', [
+                    'total_revenue' => $totalRevenue,
+                    'total_expenses' => $totalExpenses,
+                ]);
+
+                // Hitung pendapatan bersih
+                $netRevenue = $totalRevenue - $totalExpenses;
+
+                // Simpan atau perbarui data
+                $revenue = DailyNetRevenue::updateOrCreate(
+                    [
+                        'gerai_id' => $geraiId,
+                        'date' => $date->toDateString(),
+                    ],
+                    [
+                        'total_revenue' => $totalRevenue,
+                        'total_expenses' => $totalExpenses,
+                        'net_revenue' => $netRevenue,
+                    ]
+                );
+
+                // Ambil ulang data dengan relasi gerai
+                $data = DailyNetRevenue::where('date', $date->toDateString())
+                    ->where('gerai_id', $geraiId)
+                    ->with('gerai')
+                    ->get();
+
+                Log::info('Data after calculation', ['data' => $data->toArray()]);
+            }
+
             return response()->json(['data' => $data]);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            Log::error('Error in getIncomeExpenseDaily: ' . $e->getMessage(), [
+                'gerai_id' => $geraiId,
+                'date' => $validated['date'],
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['error' => 'Gagal mengambil data pendapatan dan pengeluaran'], 500);
         }
     }
 
@@ -199,16 +369,18 @@ class DailyNetRevenueController extends Controller
         try {
             $start = Carbon::parse($validated['startDate'])->startOfDay();
             $end = Carbon::parse($validated['endDate'])->endOfDay();
+
             $revenues = DailyNetRevenue::whereBetween('date', [$start, $end])
                 ->groupBy('gerai_id')
                 ->selectRaw('gerai_id, SUM(total_revenue) as total_revenue')
                 ->get()
-                ->map(fn($revenue) => [
-                    'gerai_id' => $revenue->gerai_id,
-                    'total_revenue' => $revenue->total_revenue ?? 0,
+                ->map(fn($item) => [
+                    'gerai_id' => $item->gerai_id,
+                    'total_revenue' => $item->total_revenue ?? 0,
                 ]);
+
             return response()->json(['data' => $revenues]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Error fetching total revenue: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal menghitung total pendapatan'], 500);
         }
@@ -225,11 +397,14 @@ class DailyNetRevenueController extends Controller
         try {
             $geraiId = $validated['gerai_id'];
             $period = $validated['period'];
-            $endDate = Carbon::parse($validated['date'])->endOfDay();
-            $startDate = $endDate->copy();
-            $previousStartDate = $endDate->copy();
-            $previousEndDate = $endDate->copy();
+            $referenceDate = Carbon::parse($validated['date'])->endOfDay();
 
+            // Default range setup
+            $startDate = $referenceDate->copy();
+            $previousEndDate = $referenceDate->copy();
+            $previousStartDate = $referenceDate->copy();
+
+            // Hitung berdasarkan periode
             switch ($period) {
                 case 'weekly':
                     $startDate->subDays(6);
@@ -237,45 +412,54 @@ class DailyNetRevenueController extends Controller
                     $previousStartDate = $previousEndDate->copy()->subDays(6);
                     break;
                 case 'monthly':
-                    $startDate->subMonth();
-                    $previousEndDate = $startDate->copy()->subDay();
-                    $previousStartDate = $previousEndDate->copy()->subMonth();
+                    $startDate->startOfMonth();
+                    $previousStartDate = $startDate->copy()->subMonth()->startOfMonth();
+                    $previousEndDate = $previousStartDate->copy()->endOfMonth();
                     break;
                 case 'yearly':
-                    $startDate->subYear();
-                    $previousEndDate = $startDate->copy()->subDay();
-                    $previousStartDate = $previousEndDate->copy()->subYear();
+                    $startDate->startOfYear();
+                    $previousStartDate = $startDate->copy()->subYear()->startOfYear();
+                    $previousEndDate = $previousStartDate->copy()->endOfYear();
                     break;
             }
 
+            // Net revenue untuk periode saat ini
             $currentPeriod = DailyNetRevenue::where('gerai_id', $geraiId)
-                ->whereBetween('date', [$startDate, $endDate])
+                ->whereBetween('date', [$startDate, $referenceDate])
                 ->sum('net_revenue');
 
+            // Net revenue untuk periode sebelumnya
             $previousPeriod = DailyNetRevenue::where('gerai_id', $geraiId)
                 ->whereBetween('date', [$previousStartDate, $previousEndDate])
                 ->sum('net_revenue');
 
             $difference = $currentPeriod - $previousPeriod;
-            $trend = $difference > 0 ? 'Naik' : ($difference < 0 ? 'Turun' : 'Stabil');
+            $trend = $difference > 0 ? 'Naik' : ($difference < 0 ? 'Turun' : 'Stagnan');
+            $percentageChange = $previousPeriod != 0
+                ? round(($difference / $previousPeriod) * 100, 2)
+                : null; // Null jika pembagi nol
 
             return response()->json([
-                'data' => [
-                    'gerai_id' => $geraiId,
-                    'period' => $period,
-                    'start_date' => $startDate->toDateString(),
-                    'end_date' => $endDate->toDateString(),
-                    'net_revenue' => $currentPeriod ?? 0,
-                    'previous_net_revenue' => $previousPeriod ?? 0,
-                    'difference' => $difference,
-                    'trend' => $trend,
+                'current_period' => [
+                    'start' => $startDate->toDateString(),
+                    'end' => $referenceDate->toDateString(),
+                    'net_revenue' => $currentPeriod,
                 ],
+                'previous_period' => [
+                    'start' => $previousStartDate->toDateString(),
+                    'end' => $previousEndDate->toDateString(),
+                    'net_revenue' => $previousPeriod,
+                ],
+                'trend' => $trend,
+                'difference' => $difference,
+                'percentage_change' => $percentageChange,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching periodic trend: ' . $e->getMessage());
-            return response()->json(['error' => 'Gagal mengambil tren periodik'], 500);
+            Log::error('Error calculating periodic trend: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menghitung tren periode'], 500);
         }
     }
+
 
     public function getDailyNetRevenue(Request $request, $id): JsonResponse
     {
@@ -306,7 +490,6 @@ class DailyNetRevenueController extends Controller
             'date' => 'nullable|date',
             'total_revenue' => 'nullable|numeric|min:0',
             'total_expenses' => 'nullable|numeric|min:0',
-            'net_revenue' => 'nullable|numeric',
         ]);
 
         try {
@@ -314,11 +497,11 @@ class DailyNetRevenueController extends Controller
 
             $totalRevenue = $validated['total_revenue'] ?? $revenue->total_revenue;
             $totalExpenses = $validated['total_expenses'] ?? $revenue->total_expenses;
-            $netRevenue = $validated['net_revenue'] ?? ($totalRevenue - $totalExpenses);
+            $netRevenue = $totalRevenue - $totalExpenses;
 
             $revenue->update([
                 'gerai_id' => $validated['gerai_id'] ?? $revenue->gerai_id,
-                'date' => $validated['date'] ? Carbon::parse($validated['date'])->startOfDay() : $revenue->date,
+                'date' => isset($validated['date']) ? Carbon::parse($validated['date'])->startOfDay() : $revenue->date,
                 'total_revenue' => $totalRevenue,
                 'total_expenses' => $totalExpenses,
                 'net_revenue' => $netRevenue,
@@ -340,6 +523,100 @@ class DailyNetRevenueController extends Controller
         } catch (\Exception $e) {
             Log::error('Error deleting DailyNetRevenue: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal menghapus DailyNetRevenue'], 500);
+        }
+    }
+
+    public function getRevenueByPeriod(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'gerai_id' => 'required|exists:gerais,id',
+            'period' => 'required|in:daily,monthly,yearly,all',
+            'date' => 'required_if:period,daily,monthly,yearly|date', // Wajib untuk daily, monthly, yearly
+        ]);
+
+        try {
+            $geraiId = $validated['gerai_id'];
+            $period = $validated['period'];
+            $gerai = Gerai::find($geraiId);
+
+            if (!$gerai) {
+                return response()->json(['error' => 'Gerai tidak ditemukan'], 404);
+            }
+
+            $query = Customer::where('gerai', $gerai->name)
+                ->where('status', 'FINISH')
+                ->selectRaw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total_revenue');
+
+            // Tentukan rentang waktu berdasarkan periode
+            if ($period === 'daily') {
+                $date = Carbon::parse($validated['date'])->startOfDay();
+                $endOfDay = $date->copy()->endOfDay();
+                $query->whereBetween('updated_at', [$date, $endOfDay]);
+            } elseif ($period === 'monthly') {
+                $date = Carbon::parse($validated['date']);
+                $startOfMonth = $date->copy()->startOfMonth();
+                $endOfMonth = $date->copy()->endOfMonth();
+                $query->whereBetween('updated_at', [$startOfMonth, $endOfMonth]);
+            } elseif ($period === 'yearly') {
+                $date = Carbon::parse($validated['date']);
+                $startOfYear = $date->copy()->startOfYear();
+                $endOfYear = $date->copy()->endOfYear();
+                $query->whereBetween('updated_at', [$startOfYear, $endOfYear]);
+            } elseif ($period === 'all') {
+                // Tidak ada filter tanggal untuk keseluruhan
+            }
+
+            $totalRevenue = $query->value('total_revenue') ?? 0;
+
+            // Ambil total pengeluaran (expenses) berdasarkan periode
+            $expenseQuery = Expense::where('gerai_id', $geraiId);
+            if ($period === 'daily') {
+                $expenseQuery->whereBetween('date', [$date, $endOfDay]);
+            } elseif ($period === 'monthly') {
+                $expenseQuery->whereBetween('date', [$startOfMonth, $endOfMonth]);
+            } elseif ($period === 'yearly') {
+                $expenseQuery->whereBetween('date', [$startOfYear, $endOfYear]);
+            } elseif ($period === 'all') {
+                // Tidak ada filter tanggal untuk keseluruhan
+            }
+
+            $totalExpenses = $expenseQuery->sum('amount') ?? 0;
+
+            // Hitung net revenue
+            $netRevenue = $totalRevenue - $totalExpenses;
+
+            // Simpan atau perbarui DailyNetRevenue untuk periode harian
+            if ($period === 'daily') {
+                DailyNetRevenue::updateOrCreate(
+                    [
+                        'gerai_id' => $geraiId,
+                        'date' => $date->toDateString(),
+                    ],
+                    [
+                        'total_revenue' => $totalRevenue,
+                        'total_expenses' => $totalExpenses,
+                        'net_revenue' => $netRevenue,
+                    ]
+                );
+            }
+
+            // Format response
+            $response = [
+                'gerai' => $gerai->name,
+                'period' => $period,
+                'total_revenue' => number_format($totalRevenue, 2, '.', ''),
+                'total_expenses' => number_format($totalExpenses, 2, '.', ''),
+                'net_revenue' => number_format($netRevenue, 2, '.', ''),
+            ];
+
+            if ($period !== 'all') {
+                $response['date'] = $validated['date'];
+            }
+
+            return response()->json(['data' => $response]);
+        } catch (\Throwable $e) {
+            Log::error('Error in getRevenueByPeriod: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menghitung pendapatan berdasarkan periode'], 500);
         }
     }
 }

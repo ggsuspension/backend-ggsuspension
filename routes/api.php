@@ -6,7 +6,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\DailyNetRevenueController;
-use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\GeraiController;
 use App\Http\Controllers\ImageController;
@@ -19,8 +18,6 @@ use App\Http\Controllers\StockRequestController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WarehouseSealController;
-use App\Models\Customer;
-use App\Models\ServiceCustomer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,8 +33,8 @@ Route::get('/customers', [CustomerController::class, 'getByDateRange']);
 
 Route::prefix('antrian')->group(function () {
     Route::get('/', [AntrianController::class, 'getAntrianByGeraiId']);
-    Route::get("/all",[AntrianController::class,"getAntrianAllOutlet"]);
-    Route::get("/getAll",[AntrianController::class,"getAntrianSemuaGerai"]);
+    Route::get("/all", [AntrianController::class, "getAntrianAllOutlet"]);
+    Route::get("/getAll", [AntrianController::class, "getAntrianSemuaGerai"]);
 });
 
 Route::prefix('gerais')->group(function () {
@@ -75,24 +72,27 @@ Route::prefix('seals')->group(function () {
 
 Route::prefix('expenses')->group(function () {
     Route::post('/create', [ExpenseController::class, 'createExpense']);
-    Route::post('/all', [ExpenseController::class, 'getAllExpenses']);
-    Route::get('/categories', [ExpenseCategoryController::class, 'getAllExpenseCategories']);
-    Route::get('/{id}', [ExpenseCategoryController::class, 'getExpenseCategoryById']);
+    Route::get('/all-gerais', [ExpenseController::class, 'getAllExpensesAll']);
+    Route::get('/all', [ExpenseController::class, 'getAllExpenses']);
 });
 
 Route::prefix('daily-net-revenue')->group(function () {
+    Route::get('/revenue-by-period', [DailyNetRevenueController::class, 'getRevenueByPeriod']);
     Route::post('/', [DailyNetRevenueController::class, 'createDailyNetRevenue']);
     Route::post('/calculate', [DailyNetRevenueController::class, 'calculateDailyNetRevenue']);
     Route::get('/daily', [DailyNetRevenueController::class, 'getOrCalculateDailyNetRevenue']);
     Route::get('/total-revenue', [DailyNetRevenueController::class, 'getTotalRevenue']);
+    Route::get('/daily-trend-all', [DailyNetRevenueController::class, 'dailyTrendAll']);
     Route::get('/daily-trend', [DailyNetRevenueController::class, 'getDailyTrend']);
-    Route::post('/daily-income-expense', [DailyNetRevenueController::class, 'getIncomeExpenseDaily']);
+    Route::get('/daily-income-expense', [DailyNetRevenueController::class, 'getIncomeExpenseDaily']);
     Route::get('/periodic-trend', [DailyNetRevenueController::class, 'getPeriodicTrend']);
-    Route::get('/{id}', [DailyNetRevenueController::class, 'getDailyNetRevenue']);
     Route::get('/', [DailyNetRevenueController::class, 'getAllDailyNetRevenues']);
+    // Rute dinamis dipindah ke bawah
+    // Route::get('/{id}', [DailyNetRevenueController::class, 'getDailyNetRevenue']);
     Route::put('/{id}', [DailyNetRevenueController::class, 'updateDailyNetRevenue']);
     Route::delete('/{id}', [DailyNetRevenueController::class, 'deleteDailyNetRevenue']);
 });
+
 Route::resource('service-customer', ServiceCustomerController::class);
 Route::resource('customer-profile', CustomerProfileController::class);
 Route::resource('customer', CustomerController::class);
@@ -161,16 +161,5 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('/{id}', [WarehouseSealController::class, 'destroy']);
     });
 
-    Route::prefix('expenses')->group(function () {
-        Route::post('/', [ExpenseCategoryController::class, 'createExpenseCategory']);
-        Route::put('/update/{id}', [ExpenseCategoryController::class, 'updateExpenseCategory']);
-        Route::delete('/{id}', [ExpenseCategoryController::class, 'deleteExpenseCategory']);
-    });
     Route::resource('user', UserController::class);
-
-    // Daily Net Revenues Routes
-    // Route::prefix('daily-net-revenues')->group(function () {
-    //     Route::put('/update/{id}', [DailyNetRevenueController::class, 'updateDailyNetRevenue']);
-    //     Route::delete('/{id}', [DailyNetRevenueController::class, 'deleteDailyNetRevenue']);
-    // });
 });

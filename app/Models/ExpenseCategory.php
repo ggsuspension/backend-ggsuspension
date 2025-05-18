@@ -13,16 +13,4 @@ class ExpenseCategory extends Model
         'daily_cost' => 'decimal:2',
         'monthly_cost' => 'decimal:2',
     ];
-
-    public function expenses()
-    {
-        return $this->hasMany(Expense::class);
-    }
-
-    public function gerais()
-    {
-        return $this->belongsToMany(Gerai::class, 'expense_category_gerai')
-            ->withPivot('daily_cost', 'monthly_cost')
-            ->withTimestamps();
-    }
 }

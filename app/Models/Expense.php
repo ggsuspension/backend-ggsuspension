@@ -2,16 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
+    use HasFactory;
+
     protected $table = 'expenses';
-    protected $guarded=['id'];
+
+    protected $fillable = [
+        'gerai_id',
+        'amount',
+        'description',
+        'date',
+        'category',
+    ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
         'date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'amount' => 'float',
     ];
 
     public function gerai()

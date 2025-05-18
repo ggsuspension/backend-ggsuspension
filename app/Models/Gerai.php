@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Gerai extends Model
 {
     protected $table = 'gerais';
-    protected $guarded=['id'];
+    protected $guarded = ['id'];
 
     public function users()
     {
@@ -43,12 +43,12 @@ class Gerai extends Model
         return $this->hasMany(Expense::class);
     }
 
-    public function expenseCategories()
-    {
-        return $this->belongsToMany(ExpenseCategory::class, 'expense_category_gerai')
-            ->withPivot('daily_cost', 'monthly_cost')
-            ->withTimestamps();
-    }
+    // public function expenseCategories()
+    // {
+    //     return $this->belongsToMany(ExpenseCategory::class, 'expense_category_gerai')
+    //         ->withPivot('daily_cost', 'monthly_cost')
+    //         ->withTimestamps();
+    // }
 
     public function netRevenues()
     {
