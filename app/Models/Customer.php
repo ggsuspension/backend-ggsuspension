@@ -7,25 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Customer extends Model
 {
     protected $table = 'customers';
-    protected $fillable = [
-        'nama',
-        'plat_motor',
-        'noWA',
-        'gerai',
-        'sudah_chat',
-        'sumber_info',
-        'status',
-        'sparepart',
-        'layanan',
-        'jenis_motor',
-        'harga_service',
-        'harga_sparepart',
-        'bagian_motor',
-        'bagian_motor2',
-        'motor',
-        'created_at',
-        'updated_at'
-    ];
     protected $guarded = ['id'];
     protected $casts = [
         'sparepart' => 'array'

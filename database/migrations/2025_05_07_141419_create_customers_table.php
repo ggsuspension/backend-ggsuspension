@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("sumber_info");
             $table->string("status")->default("PROGRESS");
             $table->json("sparepart")->nullable();
+            $table->integer("sparepart_id")->nullable();
             $table->string("layanan")->nullable();
             $table->string("jenis_motor")->nullable();
             $table->integer("harga_service")->nullable();

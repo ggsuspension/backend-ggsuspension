@@ -63,6 +63,7 @@ class CustomerController extends Controller
             'sumber_info' => 'sometimes',
             'status' => 'sometimes',
             'sparepart' => 'sometimes',
+            'sparepart_id' => 'sometimes',
             'layanan' => 'sometimes',
             'jenis_motor' => 'sometimes',
             'harga_service' => 'sometimes',

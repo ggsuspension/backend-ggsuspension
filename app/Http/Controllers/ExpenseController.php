@@ -63,6 +63,11 @@ class ExpenseController extends Controller
             return response()->json(['error' => 'Failed to fetch expenses: ' . $e->getMessage()], 500);
         }
     }
+    public function getTotalExpenses()
+    {
+        $data = Expense::all();
+        return response()->json($data);
+    }
 
     public function getAllExpensesAll(Request $request)
     {

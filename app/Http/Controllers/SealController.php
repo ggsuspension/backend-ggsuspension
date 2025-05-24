@@ -25,16 +25,17 @@ class SealController extends Controller
         return response()->json($seals);
     }
 
+    public function getSealsByGeraiId(int $geraiId): JsonResponse
+    {
+        $seals = Seal::where('gerai_id', $geraiId)->get();
+        return response()->json($seals);
+    }
+
     public function updateSeal(Request $request, Seal $seal): JsonResponse
     {
         $validated = $request->validate([
-            'cc_range' => 'string',
-            'price' => 'integer',
             'qty' => 'integer',
-            'motor_id' => 'exists:motors,id',
-            'gerai_id' => 'exists:gerais,id',
         ]);
-
         $seal->update($validated);
         return response()->json($seal);
     }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('motors', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
+            $table->string('subcategory');
             $table->string('img_path')->nullable();
             $table->string('img_id')->nullable();
             $table->timestamps();

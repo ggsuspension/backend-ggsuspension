@@ -289,15 +289,13 @@ class DailyNetRevenueController extends Controller
             ]);
 
             // Coba ambil data dari tabel
-            $data = DailyNetRevenue::where('date', $date->toDateString())
+            $revenue = DailyNetRevenue::where('date', $date->toDateString())
                 ->where('gerai_id', $geraiId)
                 ->with('gerai')
-                ->get();
+                ->first();
 
-            Log::info('Query result', ['data' => $data->toArray()]);
-
-            // Jika data kosong, hitung ulang
-            if ($data->isEmpty()) {
+            // Jika data tidak ada, hitung ulang
+            if (!$revenue) {
                 $gerai = Gerai::find($geraiId);
                 if (!$gerai) {
                     Log::error('Gerai tidak ditemukan', ['gerai_id' => $geraiId]);
@@ -338,17 +336,21 @@ class DailyNetRevenueController extends Controller
                         'net_revenue' => $netRevenue,
                     ]
                 );
-
-                // Ambil ulang data dengan relasi gerai
-                $data = DailyNetRevenue::where('date', $date->toDateString())
-                    ->where('gerai_id', $geraiId)
-                    ->with('gerai')
-                    ->get();
-
-                Log::info('Data after calculation', ['data' => $data->toArray()]);
             }
 
-            return response()->json(['data' => $data]);
+            // Format response
+            $response = [
+                'gerai_id' => $revenue->gerai_id,
+                'gerai' => $revenue->gerai ? $revenue->gerai->name : 'Unknown',
+                'date' => $revenue->date->toDateString(),
+                'total_revenue' => number_format($revenue->total_revenue, 2, '.', ''),
+                'total_expenses' => number_format($revenue->total_expenses, 2, '.', ''),
+                'net_revenue' => number_format($revenue->net_revenue, 2, '.', ''),
+            ];
+
+            Log::info('getIncomeExpenseDaily response', ['data' => $response]);
+
+            return response()->json(['data' => $response]);
         } catch (\Throwable $e) {
             Log::error('Error in getIncomeExpenseDaily: ' . $e->getMessage(), [
                 'gerai_id' => $geraiId,
@@ -398,13 +400,10 @@ class DailyNetRevenueController extends Controller
             $geraiId = $validated['gerai_id'];
             $period = $validated['period'];
             $referenceDate = Carbon::parse($validated['date'])->endOfDay();
-
-            // Default range setup
             $startDate = $referenceDate->copy();
             $previousEndDate = $referenceDate->copy();
             $previousStartDate = $referenceDate->copy();
 
-            // Hitung berdasarkan periode
             switch ($period) {
                 case 'weekly':
                     $startDate->subDays(6);
@@ -422,13 +421,10 @@ class DailyNetRevenueController extends Controller
                     $previousEndDate = $previousStartDate->copy()->endOfYear();
                     break;
             }
-
-            // Net revenue untuk periode saat ini
             $currentPeriod = DailyNetRevenue::where('gerai_id', $geraiId)
                 ->whereBetween('date', [$startDate, $referenceDate])
                 ->sum('net_revenue');
 
-            // Net revenue untuk periode sebelumnya
             $previousPeriod = DailyNetRevenue::where('gerai_id', $geraiId)
                 ->whereBetween('date', [$previousStartDate, $previousEndDate])
                 ->sum('net_revenue');
@@ -437,7 +433,7 @@ class DailyNetRevenueController extends Controller
             $trend = $difference > 0 ? 'Naik' : ($difference < 0 ? 'Turun' : 'Stagnan');
             $percentageChange = $previousPeriod != 0
                 ? round(($difference / $previousPeriod) * 100, 2)
-                : null; // Null jika pembagi nol
+                : null; 
 
             return response()->json([
                 'current_period' => [

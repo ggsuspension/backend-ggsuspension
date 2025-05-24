@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use App\Models\Customer;
 use App\Models\Subcategory;
 use App\Models\MotorPart;
 use App\Models\Motor;
 use App\Models\Gerai;
+use App\Models\Seal;
 use App\Models\Sparepart;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -20,143 +20,145 @@ class DatabaseSeeder extends Seeder
         // 1. Seed Categories
         $categoryMaintenance = Category::create([
             'name' => 'MAINTENANCE',
-            'img_path' => 'http://localhost:8000/storage/maintenance.jpg',
+            'img_path' => './layanan/maintenance.png',
         ]);
-        $categoryRebound = Category::create(['name' => 'REBOUND', 'img_path' => 'http://localhost:8000/storage/rebound.png']);
-        $categoryPaketRBDW = Category::create(['name' => 'PAKET REBOUND & DOWNSIZE', 'img_path' => 'http://localhost:8000/storage/paket.png']);
-        $categoryDownsize = Category::create(['name' => 'DOWNSIZE', 'img_path' => 'http://localhost:8000/storage/downsize.png']);
+        $categoryRebound = Category::create(['name' => 'REBOUND', 'img_path' => './layanan/rebound.png']);
+        $categoryPaketRBDW = Category::create(['name' => 'PAKET REBOUND & DOWNSIZE', 'img_path' => './layanan/paket.png']);
+        $categoryDownsize = Category::create(['name' => 'DOWNSIZE', 'img_path' => './layanan/downsize.png']);
 
         $subcategoryBebekMaticMain = Subcategory::create([
             'name' => 'BEBEK / MATIC',
-            "img_path" => "http://localhost:8000/bebek-matic.webp",
+            "img_path" => "./jenis-motor/bebek-matic.webp",
             'category_id' => $categoryMaintenance->id,
         ]);
         $subcategoryBebekMaticReb = Subcategory::create([
             'name' => 'BEBEK / MATIC',
-            "img_path" => "http://localhost:8000/bebek-matic.webp",
+            "img_path" => "./jenis-motor/bebek-matic.webp",
             'category_id' => $categoryRebound->id,
         ]);
         $subcategoryBebekMaticDown = Subcategory::create([
             'name' => 'BEBEK / MATIC',
             'category_id' => $categoryDownsize->id,
-            "img_path" => "http://localhost:8000/bebek-matic.webp",
+            "img_path" => "./jenis-motor/bebek-matic.webp",
         ]);
         $subcategoryBebekMaticPRD = Subcategory::create([
             'name' => 'BEBEK / MATIC',
             'category_id' => $categoryPaketRBDW->id,
-            "img_path" => "http://localhost:8000/bebek-matic.webp",
+            "img_path" => "./jenis-motor/bebek-matic.webp",
         ]);
         $subcategoryOhlinsMaticReb = Subcategory::create([
             'name' => 'OHLINS MATIC',
             'category_id' => $categoryRebound->id,
-            "img_path" => "http://localhost:8000/ohlins-matic.jpg"
+            "img_path" => "./jenis-motor/ohlins-matic.jpg"
         ]);
         $subcategoryOhlinsMaticMain = Subcategory::create([
             'name' => 'OHLINS MATIC',
             'category_id' => $categoryMaintenance->id,
-            "img_path" => "http://localhost:8000/ohlins-matic.jpg"
+            "img_path" => "./jenis-motor/ohlins-matic.jpg"
         ]);
         $subcategoryOhlinsSNCReb = Subcategory::create([
             'name' => 'OHLINS SPORT / NAKED / CRUISER',
             'category_id' => $categoryRebound->id,
-            "img_path" => "http://localhost:8000/ohlins-sport.jpg"
+            "img_path" => "./jenis-motor/ohlins-sport.jpg"
         ]);
         $subcategoryOhlinsSNCMain = Subcategory::create([
             'name' => 'OHLINS SPORT / NAKED / CRUISER',
             'category_id' => $categoryMaintenance->id,
-            "img_path" => "http://localhost:8000/ohlins-sport.jpg"
+            "img_path" => "./jenis-motor/ohlins-sport.jpg"
         ]);
         $subcategoryOhlinsTAReb = Subcategory::create([
             'name' => 'OHLINS TRAIL / ADVENTURE',
             'category_id' => $categoryRebound->id,
-            "img_path" => "http://localhost:8000/ohlins-adventure.jpg"
+            "img_path" => "./jenis-motor/ohlins-adventure.jpg"
         ]);
         $subcategoryOhlinsTAMain = Subcategory::create([
             'name' => 'OHLINS TRAIL / ADVENTURE',
             'category_id' => $categoryMaintenance->id,
-            "img_path" => "http://localhost:8000/ohlins-adventure.jpg"
+            "img_path" => "./jenis-motor/ohlins-adventure.jpg"
         ]);
         $subcategoryTAReb = Subcategory::create([
             'name' => 'TRAIL / ADVENTURE',
-            "img_path" => "http://localhost:8000/trail-adventure.jpg",
+            "img_path" => "./jenis-motor/trail-adventure.jpg",
             'category_id' => $categoryRebound->id,
         ]);
         $subcategoryTADown = Subcategory::create([
             'name' => 'TRAIL / ADVENTURE',
             'category_id' => $categoryDownsize->id,
-            "img_path" => "http://localhost:8000/trail-adventure.jpg",
+            "img_path" => "./jenis-motor/trail-adventure.jpg",
         ]);
         $subcategoryTAPRD = Subcategory::create([
             'name' => 'TRAIL / ADVENTURE',
             'category_id' => $categoryPaketRBDW->id,
-            "img_path" => "http://localhost:8000/trail-adventure.jpg",
+            "img_path" => "./jenis-motor/trail-adventure.jpg",
         ]);
         $subcategoryTAMain = Subcategory::create([
             'name' => 'TRAIL / ADVENTURE',
             'category_id' => $categoryMaintenance->id,
-            "img_path" => "http://localhost:8000/trail-adventure.jpg",
+            "img_path" => "./jenis-motor/trail-adventure.jpg",
         ]);
         $subcategorySNCMain = Subcategory::create([
             'name' => 'SPORT / NAKED / CRUISER',
             'category_id' => $categoryMaintenance->id,
-            "img_path" => "http://localhost:8000/sport-naked-cruiser.jpg",
+            "img_path" => "./jenis-motor/sport-naked-cruiser.jpg",
         ]);
         $subcategorySNCReb = Subcategory::create([
             'name' => 'SPORT / NAKED / CRUISER',
             'category_id' => $categoryRebound->id,
-            "img_path" => "http://localhost:8000/sport-naked-cruiser.jpg",
+            "img_path" => "./jenis-motor/sport-naked-cruiser.jpg",
         ]);
         $subcategorySNCDown = Subcategory::create([
             'name' => 'SPORT / NAKED / CRUISER',
             'category_id' => $categoryDownsize->id,
-            "img_path" => "http://localhost:8000/sport-naked-cruiser.jpg",
+            "img_path" => "./jenis-motor/sport-naked-cruiser.jpg",
         ]);
         $subcategorySNCPRD = Subcategory::create([
             'name' => 'SPORT / NAKED / CRUISER',
             'category_id' => $categoryPaketRBDW->id,
-            "img_path" => "http://localhost:8000/sport-naked-cruiser.jpg",
+            "img_path" => "./jenis-motor/sport-naked-cruiser.jpg",
         ]);
 
         // 3. Seed Motors
-        $motorBeatFI = Motor::create(['name' => 'Honda Beat FI', 'img_path' => 'http://localhost:8000/Honda-BeAT-FI.jpg']);
-        $motorBeatStreet = Motor::create(['name' => 'Honda Beat Street', 'img_path' => 'http://localhost:8000/honda-beat-street.jpg']);
-        $motorScoopy = Motor::create(['name' => 'Honda Scoopy', 'img_path' => 'http://localhost:8000/honda.scoopy.jpg.webp']);
-        $motorPCX = Motor::create(['name' => 'Honda PCX', 'img_path' => 'http://localhost:8000/honda-pcx.jpg']);
-        $motorADV = Motor::create(['name' => 'Honda ADV', 'img_path' => 'http://localhost:8000/Honda-ADV.png']);
-        $motorVario110 = Motor::create(['name' => 'Honda Vario 110', 'img_path' => 'http://localhost:8000/honda-vario-110.jpg']);
-        $motorVario125 = Motor::create(['name' => 'Honda Vario 125', 'img_path' => 'http://localhost:8000/honda-vario-125.jpg']);
-        $motorVario150 = Motor::create(['name' => 'Honda Vario 150', 'img_path' => 'http://localhost:8000/honda-Vario-150.jpg']);
-        $motorVario160 = Motor::create(['name' => 'Honda Vario 160', 'img_path' => 'http://localhost:8000/Honda-Vario-160.png']);
-        $motorForza250 = Motor::create(['name' => 'Honda Forza 250', 'img_path' => 'http://localhost:8000/honda-forza-250.jpg']);
-        $motorCRF150L = Motor::create(['name' => 'Honda CRF150L', 'img_path' => 'http://localhost:8000/honda-crf-150l.jpg']);
-        $motorCRF250L = Motor::create(['name' => 'Honda CRF250L', 'img_path' => 'http://localhost:8000/honda-crf-250l.jpg']);
-        $motorCBR250RR = Motor::create(['name' => 'Honda CBR250RR', 'img_path' => 'http://localhost:8000/Honda-New-CBR-250RR-.png']);
-        $motorMio = Motor::create(['name' => 'Yamaha Mio', 'img_path' => 'http://localhost:8000/yamaha-mio.jpg.webp']);
-        $motorNmax = Motor::create(['name' => 'Yamaha Nmax', 'img_path' => 'http://localhost:8000/yamaha-nmax-.jpg.webp']);
-        $motorAerox = Motor::create(['name' => 'Yamaha Aerox', 'img_path' => 'http://localhost:8000/yamaha-aerox.jpg.webp']);
-        $motorFino = Motor::create(['name' => 'Yamaha Fino', 'img_path' => 'http://localhost:8000/yamaha-fino.jpg.webp']);
-        $motorGear = Motor::create(['name' => 'Yamaha Gear', 'img_path' => 'http://localhost:8000/yamaha-gear.jpg']);
-        $motorNouvo = Motor::create(['name' => 'Yamaha Nouvo', 'img_path' => 'http://localhost:8000/yamaha-nouvo.jpg']);
-        $motorWR155R = Motor::create(['name' => 'Yamaha WR155R', 'img_path' => 'http://localhost:8000/yamaha-wr155r.jpeg']);
-        $motorR25 = Motor::create(['name' => 'Yamaha R25', 'img_path' => 'http://localhost:8000/yamaha-R25.webp']);
-        $motorSkywave = Motor::create(['name' => 'Suzuki Skywave', 'img_path' => 'http://localhost:8000/suzuki-skywave.webp']);
-        $motorAxelo = Motor::create(['name' => 'Suzuki Axelo', 'img_path' => 'http://localhost:8000/suzuki-axelo.jpg']);
-        $motorNex = Motor::create(['name' => 'Suzuki Nex', 'img_path' => 'http://localhost:8000/suzuki-nex.webp']);
-        $motorBurgman125 = Motor::create(['name' => 'Suzuki Burgman 125', 'img_path' => 'http://localhost:8000/suzuki-burgman-125.jpg']);
-        $motorAccess = Motor::create(['name' => 'Suzuki Access', 'img_path' => 'http://localhost:8000/suzuki-access.jpg']);
-        $motorLX125 = Motor::create(['name' => 'Vespa LX 125', 'img_path' => 'http://localhost:8000/vespa-lx-125.jpeg.webp']);
-        $motorLX150 = Motor::create(['name' => 'Vespa LX 150', 'img_path' => 'http://localhost:8000/vespa-lx-150.jpg.webp']);
-        $motorS125 = Motor::create(['name' => 'Vespa S 125', 'img_path' => 'http://localhost:8000/vespa-s-125.webp']);
-        $motorS150 = Motor::create(['name' => 'Vespa S 150', 'img_path' => 'http://localhost:8000/vespa-s-150.jpg']);
-        $motorLike125 = Motor::create(['name' => 'Kymco Like 125', 'img_path' => 'http://localhost:8000/Kymco-Like-125.jpeg']);
-        $motorLike150 = Motor::create(['name' => 'Kymco Like 150', 'img_path' => 'http://localhost:8000/Kymco-like-150.png']);
-        $motorDowntown250i = Motor::create(['name' => 'Kymco Downtown 250i', 'img_path' => 'http://localhost:8000/Kymco-Downtown-250i.png']);
-        $motorKLX150 = Motor::create(['name' => 'Kawasaki KLX150', 'img_path' => 'http://localhost:8000/Kawasaki-KLX-150.jpg']);
-        $motorKLX250 = Motor::create(['name' => 'Kawasaki KLX250', 'img_path' => 'http://localhost:8000/Kawasaki-KLX-250.jpg']);
-        $motorNinja250 = Motor::create(['name' => 'Kawasaki Ninja 250', 'img_path' => 'http://localhost:8000/Kawasaki-Ninja-250.jpg']);
-        $motorZ250 = Motor::create(['name' => 'Kawasaki Z250', 'img_path' => 'http://localhost:8000/kawasaki-ninja-Z250.jpg.webp']);
+        // BEBEK / MATIC - Motor populer di Indonesia
+        $motorBeatFI = Motor::create(['name' => 'Honda Beat FI', 'img_path' => './motor/Honda-BeAT-FI.jpg', "subcategory" => "BEBEK / MATIC"]);
+        $motorBeatStreet = Motor::create(['name' => 'Honda Beat Street', 'img_path' => './motor/honda-beat-street.jpg', "subcategory" => "BEBEK / MATIC"]);
+        $motorScoopy = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda Scoopy', 'img_path' => './motor/honda.scoopy.jpg.webp']);
+        $motorPCX = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda PCX', 'img_path' => './motor/honda-pcx.jpg']);
+        $motorADV = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda ADV', 'img_path' => './motor/Honda-ADV.png']);
+        $motorVario110 = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda Vario 110', 'img_path' => './motor/honda-vario-110.jpg']);
+        $motorVario125 = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda Vario 125', 'img_path' => './motor/honda-vario-125.jpg']);
+        $motorVario150 = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda Vario 150', 'img_path' => './motor/honda-Vario-150.jpg']);
+        $motorVario160 = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Honda Vario 160', 'img_path' => './motor/Honda-Vario-160.png']);
+        $motorMio = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Yamaha Mio', 'img_path' => './motor/yamaha-mio.jpg.webp']);
+        $motorNmax = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Yamaha Nmax', 'img_path' => './motor/yamaha-nmax-.jpg.webp']);
+        $motorXmax = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Yamaha Xmax', 'img_path' => './motor/yamaha-xmax.jpg']);
+        $motorAerox = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Yamaha Aerox', 'img_path' => './motor/yamaha-aerox.jpg.webp']);
+        $motorFino = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Yamaha Fino', 'img_path' => './motor/yamaha-fino.jpg.webp']);
+        $motorGear = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Yamaha Gear', 'img_path' => './motor/yamaha-gear.jpg']);
+        $motorNex = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Suzuki Nex', 'img_path' => './motor/suzuki-nex.webp']);
+        $motorLX125 = Motor::create(["subcategory" => "BEBEK / MATIC", 'name' => 'Vespa LX 125', 'img_path' => './motor/vespa-lx-125.jpeg.webp']);
 
+        // TRAIL / ADVENTURE - Motor populer di Indonesia
+        $motorCRF150L = Motor::create(["subcategory" => "TRAIL / ADVENTURE", 'name' => 'Honda CRF150L', 'img_path' => './motor/honda-crf-150l.jpg']);
+        $motorCRF250L = Motor::create(["subcategory" => "TRAIL / ADVENTURE", 'name' => 'Honda CRF250L', 'img_path' => './motor/honda-crf-250l.jpg']);
+        $motorWR155R = Motor::create(["subcategory" => "TRAIL / ADVENTURE", 'name' => 'Yamaha WR155R', 'img_path' => './motor/yamaha-wr155r.jpeg']);
+        $motorKLX150 = Motor::create(["subcategory" => "TRAIL / ADVENTURE", 'name' => 'Kawasaki KLX150', 'img_path' => './motor/kawasaki-KLX-150.jpg']);
+        $motorKLX250 = Motor::create(["subcategory" => "TRAIL / ADVENTURE", 'name' => 'Kawasaki KLX250', 'img_path' => './motor/kawasaki-KLX-250.jpg']);
 
+        $motorCBR150R = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Honda CBR150R', 'img_path' => './motor/honda-cbr150r.jpg']);
+        $motorForza250 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Honda Forza', 'img_path' => './motor/honda-forza-250.jpg']);
+        $motorCBR250RR = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Honda CBR250RR', 'img_path' => './motor/Honda-New-CBR-250RR.png']);
+        $motorCB150R = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Honda CB150R Streetfire', 'img_path' => './motor/honda-cb150r-streetfire.jpg']);
+        $motorR15 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Yamaha YZF-R15', 'img_path' => './motor/yamaha-r15.jpg']);
+        $motorR25 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Yamaha YZF-R25', 'img_path' => './motor/yamaha-r25.webp']);
+        $motorMT15 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Yamaha MT-15', 'img_path' => './motor/yamaha-mt15.webp']);
+        $motorXSR155 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Yamaha XSR155', 'img_path' => './motor/yamaha-xsr155.webp']);
+        $motorVixion = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Yamaha Vixion', 'img_path' => './motor/yamaha-vixion.jpg']);
+        $motorMXKing = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Yamaha MX King', 'img_path' => './motor/yamaha-mx-king.jpg']);
+        $motorNinja250 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Kawasaki Ninja 250', 'img_path' => './motor/kawasaki-ninja-250.jpg']);
+        $motorZ250 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Kawasaki Z250', 'img_path' => './motor/kawasaki-z250.jpg']);
+        $motorW175 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Kawasaki W175', 'img_path' => './motor/kawasaki-w175.jpg']);
+        $motorGSXR150 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Suzuki GSX-R150', 'img_path' => './motor/suzuki-gsx-r150.png']);
+        $motorGSXS150 = Motor::create(["subcategory" => "SPORT / NAKED / CRUISER", 'name' => 'Suzuki GSX-S150', 'img_path' => './motor/suzuki-gsx-s150.webp']);
         // Bebek Matic 110-160CC (MAINTENANCE)
         $motorPartBMMainDSTD110 = MotorPart::create([
             'name' => 'DEPAN STD 110-160CC',
@@ -695,13 +697,13 @@ class DatabaseSeeder extends Seeder
             'name' => 'Bekasi',
             'location' => 'Bekasi',
         ]);
-        $geraiBogor = Gerai::create([
-            'name' => 'Bogor',
-            'location' => 'Bogor',
-        ]);
         $geraiDepok = Gerai::create([
             'name' => 'Depok',
             'location' => 'Depok',
+        ]);
+        $geraiBogor = Gerai::create([
+            'name' => 'Bogor',
+            'location' => 'Bogor',
         ]);
         $geraiCikarang = Gerai::create([
             'name' => 'Cikarang',
@@ -715,29 +717,511 @@ class DatabaseSeeder extends Seeder
             'name' => 'Jaksel',
             'location' => 'Jakarta Selatan',
         ]);
+        $geraiJakartaBarat = Gerai::create([
+            'name' => 'Jakbar',
+            'location' => 'Jakarta Barat',
+        ]);
+        $geraiTangerang = Gerai::create([
+            'name' => 'Tangerang',
+            'location' => 'Tangerang',
+        ]);
 
-        // 8. Seed WarehouseSeals
         Sparepart::insert([[
             'type' => 'KTC COPY',
             'size' => '12.5-32.15',
-            'price' => 60000,
+            'price' => 50000,
             'qty' => 100,
             'category' => 'seal',
-            'motor_id' => $motorBeatFI->id,
+            'motor_id' => null,
+        ], [
+            'type' => 'RCB COPY',
+            'size' => '12.5-32.15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
         ], [
             'type' => 'KTC RACING',
             'size' => '14-22-5 USH',
-            'price' => 70000,
+            'price' => 40000,
             'qty' => 100,
             'category' => 'seal',
-            'motor_id' => $motorBeatStreet->id,
+            'motor_id' => null,
+        ], [
+            'type' => 'YSS G-SPORT',
+            'size' => '12-20-5 YSS',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
         ], [
             'type' => 'YSS G-SERIES',
-            'size' => '12-20-5-YSS',
+            'size' => '12-31.5-15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '12-31.5-15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '14-24-5',
+            'price' => 80000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'RCB',
+            'size' => '14-22-5 UHN',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'KTC',
+            'size' => '14-22-5 UHN',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'KYB ELITE',
+            'size' => '15-28-10',
             'price' => 65000,
             'qty' => 100,
             'category' => 'seal',
             'motor_id' => NULL,
+        ], [
+            'type' => 'GL PRO',
+            'size' => '10-30-12',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '14-26-6',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '14-36-12',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+        ], [
+            'type' => 'MX KING',
+            'size' => '12.5-37.13.4',
+            'price' => 65000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorMXKing->id,
+        ], [
+            'type' => 'VIXION',
+            'size' => '12.5-37.13.4',
+            'price' => 65000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorVixion->id,
+        ], [
+            'type' => 'KTC RACING',
+            'size' => 'LBH 14',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+        ], [
+            'type' => 'SEAL ADV',
+            'size' => 'SEAL BKG ADV',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorADV->id,
+        ], [
+            'type' => 'SEAL NMAX',
+            'size' => 'SEAL BKG NMAX',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorNmax->id,
+        ]]);
+        // AS SHOCK
+        Sparepart::insert([[
+            'type' => 'NMAX',
+            'size' => 'AS SHOCK',
+            'price' => 600000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorNmax->id,
+        ], [
+            'type' => 'AEROX',
+            'size' => 'AS SHOCK',
+            'price' => 600000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorAerox->id,
+        ], [
+            'type' => 'VARIO',
+            'size' => 'AS SHOCK',
+            'price' => 350000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => null,
+        ], [
+            'type' => 'BEAT FI',
+            'size' => 'AS SHOCK',
+            'price' => 350000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorBeatFI->id,
+        ], [
+            'type' => 'CB 150',
+            'size' => 'AS SHOCK',
+            'price' => 850000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorCB150R->id,
+        ], [
+            'type' => 'CBR 150R FACELIFT',
+            'size' => 'AS SHOCK',
+            'price' => 850000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorCBR150R->id,
+        ]]);
+        // SEAL SHOCK DEPAN
+        Sparepart::insert([[
+            'type' => 'NMAX',
+            'size' => '3 BH',
+            'price' => 80000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorNmax->id,
+        ], [
+            'type' => 'SUPRA',
+            'size' => 'GN5',
+            'price' => 60000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+        ], [
+            'type' => 'VIXION',
+            'size' => '3Ci',
+            'price' => 100000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorVixion->id,
+        ], [
+            'type' => 'XMAX',
+            'size' => '3Ci',
+            'price' => 150000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorXmax->id,
+        ], [
+            'type' => 'CB/CBR',
+            'size' => '51490-KWL 003',
+            'price' => 300000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+        ]]);
+        // PER DOWNSIZE
+        Sparepart::insert([[
+            'type' => 'NMAX',
+            'size' => 'PER DOWN SIZE',
+            'price' => 20000,
+            'qty' => 100,
+            'category' => 'per',
+            'motor_id' => $motorNmax->id,
+        ], [
+            'type' => 'AEROX',
+            'size' => 'PER DOWN SIZE',
+            'price' => 8000,
+            'qty' => 100,
+            'category' => 'per',
+            'motor_id' => $motorAerox->id,
+        ], [
+            'type' => 'VARIO',
+            'size' => 'PER DOWN SIZE',
+            'price' => 8000,
+            'qty' => 100,
+            'category' => 'per',
+            'motor_id' => null,
+        ]]);
+
+        // 9. SEED SEAL PER GERAI
+        // Seal Shock
+        Seal::insert([[
+            'type' => 'KTC COPY',
+            'size' => '12.5-32.15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'RCB COPY',
+            'size' => '12.5-32.15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'KTC RACING',
+            'size' => '14-22-5 USH',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'YSS G-SPORT',
+            'size' => '12-20-5 YSS',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'YSS G-SERIES',
+            'size' => '12-31.5-15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '12-31.5-15',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '14-24-5',
+            'price' => 80000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'RCB',
+            'size' => '14-22-5 UHN',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'KTC',
+            'size' => '14-22-5 UHN',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'KYB ELITE',
+            'size' => '15-28-10',
+            'price' => 65000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'GL PRO',
+            'size' => '10-30-12',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '14-26-6',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'BANYAK TYPE',
+            'size' => '14-36-12',
+            'price' => 50000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => NULL,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'MX KING',
+            'size' => '12.5-37.13.4',
+            'price' => 65000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorMXKing->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'VIXION',
+            'size' => '12.5-37.13.4',
+            'price' => 65000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorVixion->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'KTC RACING',
+            'size' => 'LBH 14',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'SEAL ADV',
+            'size' => 'SEAL BKG ADV',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorADV->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'SEAL NMAX',
+            'size' => 'SEAL BKG NMAX',
+            'price' => 40000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorNmax->id,
+            'gerai_id' => $geraiBekasi->id,
+        ]]);
+        // AS SHOCK
+        Seal::insert([[
+            'type' => 'NMAX',
+            'size' => 'AS SHOCK',
+            'price' => 600000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorNmax->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'AEROX',
+            'size' => 'AS SHOCK',
+            'price' => 600000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorAerox->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'VARIO',
+            'size' => 'AS SHOCK',
+            'price' => 350000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'BEAT FI',
+            'size' => 'AS SHOCK',
+            'price' => 350000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorBeatFI->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'CB 150',
+            'size' => 'AS SHOCK',
+            'price' => 850000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorCB150R->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'CBR 150R FACELIFT',
+            'size' => 'AS SHOCK',
+            'price' => 850000,
+            'qty' => 100,
+            'category' => 'as',
+            'motor_id' => $motorCBR150R->id,
+            'gerai_id' => $geraiBekasi->id,
+        ]]);
+        // SEAL SHOCK DEPAN
+        Seal::insert([[
+            'type' => 'NMAX',
+            'size' => '3 BH',
+            'price' => 80000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorNmax->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'SUPRA',
+            'size' => 'GN5',
+            'price' => 60000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'VIXION',
+            'size' => '3Ci',
+            'price' => 100000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorVixion->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'XMAX',
+            'size' => '3Ci',
+            'price' => 150000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => $motorXmax->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'CB/CBR',
+            'size' => '51490-KWL 003',
+            'price' => 300000,
+            'qty' => 100,
+            'category' => 'seal',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
+        ]]);
+        // PER DOWNSIZE
+        Seal::insert([[
+            'type' => 'NMAX',
+            'size' => 'PER DOWN SIZE',
+            'price' => 20000,
+            'qty' => 100,
+            'category' => 'per',
+            'motor_id' => $motorNmax->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'AEROX',
+            'size' => 'PER DOWN SIZE',
+            'price' => 8000,
+            'qty' => 100,
+            'category' => 'per',
+            'motor_id' => $motorAerox->id,
+            'gerai_id' => $geraiBekasi->id,
+        ], [
+            'type' => 'VARIO',
+            'size' => 'PER DOWN SIZE',
+            'price' => 8000,
+            'qty' => 100,
+            'category' => 'per',
+            'motor_id' => null,
+            'gerai_id' => $geraiBekasi->id,
         ]]);
 
         User::insert([["username" => "admin pusat", "password" => Hash::make("12345"), "gerai_id" => 1, "role" => "ADMIN"], ["username" => "admin depok", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 2], ["username" => "purchasing", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "GUDANG"], ["username" => "ceo", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "CEO"]]);
