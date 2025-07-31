@@ -366,16 +366,34 @@ class DailyNetRevenueController extends Controller
         $validated = $request->validate([
             'startDate' => 'required|date',
             'endDate' => 'required|date',
+            'geraiId' => 'nullable|exists:gerais,id',
         ]);
 
         try {
-            $start = Carbon::parse($validated['startDate'])->startOfDay();
-            $end = Carbon::parse($validated['endDate'])->endOfDay();
+            $startDate = $validated['startDate'];
+            $endDate = $validated['endDate'];
 
-            $revenues = DailyNetRevenue::whereBetween('date', [$start, $end])
-                ->groupBy('gerai_id')
-                ->selectRaw('gerai_id, SUM(total_revenue) as total_revenue')
-                ->get()
+            // Konversi YY-MM-DD ke YYYY-MM-DD
+            if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $startDate)) {
+                $startDate = '20' . $startDate; // Asumsikan abad 21
+            }
+            if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $endDate)) {
+                $endDate = '20' . $endDate;
+            }
+
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+
+            $query = DailyNetRevenue::whereBetween('date', [$start, $end])
+                ->selectRaw('gerai_id, SUM(total_revenue) as total_revenue');
+
+            if (!empty($validated['geraiId'])) {
+                $query->where('gerai_id', $validated['geraiId']);
+            } else {
+                $query->groupBy('gerai_id');
+            }
+
+            $revenues = $query->get()
                 ->map(fn($item) => [
                     'gerai_id' => $item->gerai_id,
                     'total_revenue' => $item->total_revenue ?? 0,
@@ -385,6 +403,55 @@ class DailyNetRevenueController extends Controller
         } catch (\Throwable $e) {
             Log::error('Error fetching total revenue: ' . $e->getMessage());
             return response()->json(['error' => 'Gagal menghitung total pendapatan'], 500);
+        }
+    }
+
+    public function getTotalGrossRevenue(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date',
+            'geraiId' => 'required|exists:gerais,id',
+        ]);
+
+        try {
+            $startDate = $validated['startDate'];
+            $endDate = $validated['endDate'];
+            $geraiId = $validated['geraiId'];
+
+            // Konversi YY-MM-DD ke YYYY-MM-DD jika perlu
+            if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $startDate)) {
+                $startDate = '20' . $startDate;
+            }
+            if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $endDate)) {
+                $endDate = '20' . $endDate;
+            }
+
+            $start = Carbon::parse($startDate)->startOfDay();
+            $end = Carbon::parse($endDate)->endOfDay();
+
+            $gerai = Gerai::find($geraiId);
+            if (!$gerai) {
+                return response()->json(['error' => 'Gerai tidak ditemukan'], 404);
+            }
+
+            $totalRevenue = Customer::where('gerai', $gerai->name)
+                ->where('status', 'FINISH')
+                ->whereBetween('updated_at', [$start, $end])
+                ->selectRaw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total')
+                ->value('total') ?? 0;
+
+            Log::info('getTotalGrossRevenue result', [
+                'gerai_id' => $geraiId,
+                'startDate' => $start->toDateString(),
+                'endDate' => $end->toDateString(),
+                'total_revenue' => $totalRevenue,
+            ]);
+
+            return response()->json(['totalRevenue' => $totalRevenue]);
+        } catch (\Throwable $e) {
+            Log::error('Error in getTotalGrossRevenue: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal menghitung total pendapatan kotor'], 500);
         }
     }
 
@@ -433,7 +500,7 @@ class DailyNetRevenueController extends Controller
             $trend = $difference > 0 ? 'Naik' : ($difference < 0 ? 'Turun' : 'Stagnan');
             $percentageChange = $previousPeriod != 0
                 ? round(($difference / $previousPeriod) * 100, 2)
-                : null; 
+                : null;
 
             return response()->json([
                 'current_period' => [

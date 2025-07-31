@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 
 class WarehouseSealController extends Controller
 {
@@ -21,8 +20,7 @@ class WarehouseSealController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'type' => 'required|string',
-            'size' => 'sometimes',
+            'name' => 'required|string',
             'price' => 'required|integer',
             'qty' => 'required|integer|min:0',
             "category" => 'required|string',
@@ -48,10 +46,8 @@ class WarehouseSealController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $warehouseSeal = Sparepart::findOrFail($id);
-
         $validated = $request->validate([
-            'type' => 'sometimes|string|max:255',
-            'size' => 'sometimes',
+            'name' => 'sometimes|string|max:255',
             'price' => 'sometimes|integer|min:0',
             'qty' => 'sometimes|integer|min:0',
             "category" => 'sometimes|string',
@@ -61,6 +57,7 @@ class WarehouseSealController extends Controller
         $warehouseSeal->update($validated);
         return response()->json(['data' => $warehouseSeal->load('motor')], 200);
     }
+
 
     public function destroy($id): JsonResponse
     {

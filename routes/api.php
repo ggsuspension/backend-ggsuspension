@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\CustomerSparepartController;
 use App\Http\Controllers\DailyNetRevenueController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\GeraiController;
@@ -21,7 +22,6 @@ use App\Http\Controllers\WarehouseSealController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public Routes (No Authentication)
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/orders/create', [OrderController::class, 'store']);
@@ -82,6 +82,7 @@ Route::prefix('daily-net-revenue')->group(function () {
     Route::post('/calculate', [DailyNetRevenueController::class, 'calculateDailyNetRevenue']);
     Route::get('/daily', [DailyNetRevenueController::class, 'getOrCalculateDailyNetRevenue']);
     Route::get('/total-revenue', [DailyNetRevenueController::class, 'getTotalRevenue']);
+    Route::get('/total-gross-revenue', [DailyNetRevenueController::class, 'getTotalGrossRevenue']);
     Route::get('/daily-trend-all', [DailyNetRevenueController::class, 'dailyTrendAll']);
     Route::get('/daily-trend', [DailyNetRevenueController::class, 'getDailyTrend']);
     Route::get('/daily-income-expense', [DailyNetRevenueController::class, 'getIncomeExpenseDaily']);
@@ -97,6 +98,7 @@ Route::resource('service-customer', ServiceCustomerController::class);
 Route::resource('customer-profile', CustomerProfileController::class);
 Route::resource('customer', CustomerController::class);
 Route::resource('image', ImageController::class);
+Route::resource("customer-sparepart", CustomerSparepartController::class);
 
 // Authenticated Routes (JWT with auth:api)
 Route::middleware('auth:api')->group(function () {

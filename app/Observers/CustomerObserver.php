@@ -20,23 +20,7 @@ class CustomerObserver
         ]);
 
         if ($customer->status === 'FINISH' && !empty(trim($customer->gerai))) {
-            $gerai = Gerai::where('name', trim($customer->gerai))->first();
-            if ($gerai) {
-                Log::info("Dispatching CalculateDailyNetRevenue", [
-                    'customer_id' => $customer->id,
-                    'gerai_id' => $gerai->id,
-                    'date' => $customer->created_at->toDateString(),
-                ]);
-                CalculateDailyNetRevenue::dispatchSync(
-                    $gerai->id,
-                    $customer->created_at->toDateString()
-                );
-            } else {
-                Log::warning("Gerai not found", [
-                    'customer_id' => $customer->id,
-                    'gerai_name' => $customer->gerai,
-                ]);
-            }
+            $this->dispatchJob($customer, $customer->created_at);
         }
     }
 
@@ -44,25 +28,62 @@ class CustomerObserver
     {
         $originalStatus = $customer->getOriginal('status');
         $newStatus = $customer->status;
+        $originalHargaService = $customer->getOriginal('harga_service');
+        $newHargaService = $customer->harga_service;
+        $originalHargaSparepart = $customer->getOriginal('harga_sparepart');
+        $newHargaSparepart = $customer->harga_sparepart;
 
-        if ($originalStatus !== 'FINISH' && $newStatus === 'FINISH' && !empty(trim($customer->gerai))) {
-            $gerai = Gerai::where('name', trim($customer->gerai))->first();
-            if ($gerai) {
-                Log::info("Dispatching CalculateDailyNetRevenue", [
+        Log::debug("Customer updated", [
+            'customer_id' => $customer->id,
+            'original_status' => $originalStatus,
+            'new_status' => $newStatus,
+            'original_harga_service' => $originalHargaService,
+            'new_harga_service' => $newHargaService,
+            'original_harga_sparepart' => $originalHargaSparepart,
+            'new_harga_sparepart' => $newHargaSparepart,
+        ]);
+
+        if (!empty(trim($customer->gerai))) {
+            if ($originalStatus !== 'FINISH' && $newStatus === 'FINISH') {
+                Log::info("Triggering dispatchJob due to status change to FINISH", [
                     'customer_id' => $customer->id,
-                    'gerai_id' => $gerai->id,
-                    'date' => $customer->updated_at->toDateString(),
                 ]);
-                CalculateDailyNetRevenue::dispatchSync(
-                    $gerai->id,
-                    $customer->updated_at->toDateString()
-                );
-            } else {
-                Log::warning("Gerai not found", [
+                $this->dispatchJob($customer, $customer->updated_at);
+            } elseif (
+                $newStatus === 'FINISH' &&
+                ($originalHargaService != $newHargaService || $originalHargaSparepart != $newHargaSparepart)
+            ) {
+                Log::info("Triggering dispatchJob due to harga_service or harga_sparepart change", [
                     'customer_id' => $customer->id,
-                    'gerai_name' => $customer->gerai,
                 ]);
+                $this->dispatchJob($customer, $customer->updated_at);
             }
+        }
+    }
+
+    protected function dispatchJob(Customer $customer, Carbon $date): void
+    {
+        Log::debug("Entering dispatchJob", [
+            'customer_id' => $customer->id,
+            'date' => $date->toDateString(),
+        ]);
+
+        $gerai = Gerai::where('name', trim($customer->gerai))->first();
+        if ($gerai) {
+            Log::info("Dispatching CalculateDailyNetRevenue", [
+                'customer_id' => $customer->id,
+                'gerai_id' => $gerai->id,
+                'date' => $date->toDateString(),
+            ]);
+            CalculateDailyNetRevenue::dispatchSync(
+                $gerai->id,
+                $date->toDateString()
+            );
+        } else {
+            Log::warning("Gerai not found", [
+                'customer_id' => $customer->id,
+                'gerai_name' => $customer->gerai,
+            ]);
         }
     }
 }

@@ -130,14 +130,13 @@ class StockRequestController extends Controller
 
             $sparepartApproved = Seal::create([
                 'category' => $warehouseSeal->category,
-                'type' => $warehouseSeal->type,
-                'size' => $warehouseSeal->size,
+                'name' => $warehouseSeal->name,
                 'motor_id' => $warehouseSeal->motor_id,
                 'price' => $warehouseSeal->price,
+                'sparepart_id' => $warehouseSeal->id,
                 'qty' => $stockRequest->qty_requested,
                 'gerai_id' => $stockRequest->gerai_id,
             ]);
-
             DB::commit();
 
             Log::info('Stock request approved successfully', [

@@ -23,7 +23,7 @@ class Customer extends Model
         });
 
         static::updating(function ($customer) {
-            if ($customer->gerai && !Gerai::where('name', $customer->gerai)->exists()) {
+            if ($customer->isDirty('gerai') && $customer->gerai && !Gerai::where('name', $customer->gerai)->exists()) {
                 throw new \Exception("Gerai {$customer->gerai} tidak ditemukan.");
             }
         });
@@ -31,7 +31,11 @@ class Customer extends Model
 
     public function gerai()
     {
-        return $this->hasOne(Gerai::class, 'name', 'gerai');
-        // return $this->belongsTo(Gerai::class, 'gerai_id');
+        return $this->belongsTo(Gerai::class, 'gerai', 'name');
+    }
+
+    public function spareparts()
+    {
+        return $this->hasMany(CustomerSparepart::class);
     }
 }

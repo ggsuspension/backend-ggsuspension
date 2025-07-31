@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('seals', function (Blueprint $table) {
             $table->id();
             $table->string("category");
-            $table->string("type");
-            $table->string("size")->nullable();
+            $table->string("name");
+            $table->integer("sparepart_id");
             $table->integer('price');
             $table->integer('qty');
             $table->unsignedBigInteger('motor_id')->nullable();

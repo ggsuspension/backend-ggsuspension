@@ -45,11 +45,26 @@ class CalculateDailyNetRevenue implements ShouldQueue
                 return;
             }
 
-            $totalRevenue = Customer::where('gerai', $gerai->name)
+            // Hitung service_total dan sparepart_total dari tabel customers
+            $revenueData = Customer::where('gerai', $gerai->name)
                 ->where('status', 'FINISH')
-                ->whereBetween('updated_at', [$startOfDay, $endOfDay])
-                ->select(DB::raw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total'))
-                ->value('total') ?? 0;
+                ->whereBetween('customers.updated_at', [$startOfDay, $endOfDay])
+                ->select([
+                    DB::raw('SUM(COALESCE(harga_service, 0)) as service_total'),
+                    DB::raw('SUM(COALESCE(harga_sparepart, 0)) as sparepart_total')
+                ])
+                ->first();
+
+            // Jika harga_sparepart kosong, hitung dari customer_spareparts
+            $sparepartTotalFromParts = Customer::where('gerai', $gerai->name)
+                ->where('status', 'FINISH')
+                ->whereBetween('customers.updated_at', [$startOfDay, $endOfDay])
+                ->leftJoin('customer_spareparts', 'customers.id', '=', 'customer_spareparts.customer_id')
+                ->sum(DB::raw('COALESCE(customer_spareparts.qty * customer_spareparts.price, 0)'));
+
+            $serviceTotal = $revenueData->service_total ?? 0;
+            $sparepartTotal = $revenueData->sparepart_total > 0 ? $revenueData->sparepart_total : ($sparepartTotalFromParts ?? 0);
+            $totalRevenue = $serviceTotal + $sparepartTotal;
 
             $totalExpenses = Expense::where('gerai_id', $this->geraiId)
                 ->whereBetween('date', [$startOfDay, $endOfDay])
@@ -59,6 +74,8 @@ class CalculateDailyNetRevenue implements ShouldQueue
 
             Log::info("Calculation result", [
                 'total_revenue' => $totalRevenue,
+                'service_total' => $serviceTotal,
+                'sparepart_total' => $sparepartTotal,
                 'total_expenses' => $totalExpenses,
                 'net_revenue' => $netRevenue,
             ]);
@@ -78,7 +95,9 @@ class CalculateDailyNetRevenue implements ShouldQueue
             Log::info("DailyNetRevenue updated", [
                 'gerai_id' => $this->geraiId,
                 'date' => $startOfDay->toDateString(),
+                'total_revenue' => $totalRevenue,
                 'total_expenses' => $totalExpenses,
+                'net_revenue' => $netRevenue,
             ]);
         } catch (\Throwable $e) {
             Log::error("Error in CalculateDailyNetRevenue: " . $e->getMessage(), [

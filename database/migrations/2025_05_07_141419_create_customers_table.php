@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string("gerai")->nullable();
             $table->string("sudah_chat");
             $table->string("sumber_info");
-            $table->string("status")->default("PROGRESS");
+            $table->string("status")->default("MENUNGGU ANTRIAN");
             $table->json("sparepart")->nullable();
             $table->integer("sparepart_id")->nullable();
             $table->string("layanan")->nullable();

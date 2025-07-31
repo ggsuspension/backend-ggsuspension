@@ -725,506 +725,726 @@ class DatabaseSeeder extends Seeder
             'name' => 'Tangerang',
             'location' => 'Tangerang',
         ]);
+        User::insert([["username" => "admin pusat", "password" => Hash::make("12345"), "gerai_id" => 1, "role" => "ADMIN"], ["username" => "admin depok", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 2], ["username" => "admin bogor", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 3], ["username" => "admin cikarang", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 4], ["username" => "admin jaktim", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 5], ["username" => "admin jaksel", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 6], ["username" => "admin jakbar", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 7], ["username" => "admin tangerang", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 8],  ["username" => "purchasing", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "GUDANG"], ["username" => "ceo", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "CEO"]]);
+        Sparepart::insert([
+            // SEAL Category - dari foto 2
+            [
+                "name" => "3HB - 30x40,5x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "GN5 - 26x37x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "KC5 - 31x43x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 120000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "K84 CRF - 37x50x10",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 230000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "KWL - 37x50x11",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 240000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "3CI/5BP - 33x45x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 140000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Vesmet Std - 14x34x14",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 65000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "KLX TELECOPIC - 33x46x11",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 25000, // Tidak ada di foto, menggunakan estimasi
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Seal depan B48 R15 - 37x49,1X10",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 300000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "45p 3145-00",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 200000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "USD Real Jump - 48x58x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 480000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "LBH 12 - 12x20X4,5/6",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "LBH 14 - 14 X 22 X 4,5/6",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "YSS - 12x31,5x15",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "YSS - 12,5x32x15",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Ohlins - 14x24x5",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 80000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "USH - 14x22x5",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "NOK - 10x30x12",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "RSD ST - 14x36x12",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "USH CRF/KLX blkng - 12x24x5",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 60000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "UHN - 14x24x6",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 65000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Seal KYB - 15x28x10",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 70000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Seal Vesmet blkng - 10x28x13,4",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 65000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Seal belakang NMAX",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Seal belakang ADV",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
 
-        Sparepart::insert([[
-            'type' => 'KTC COPY',
-            'size' => '12.5-32.15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ], [
-            'type' => 'RCB COPY',
-            'size' => '12.5-32.15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ], [
-            'type' => 'KTC RACING',
-            'size' => '14-22-5 USH',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ], [
-            'type' => 'YSS G-SPORT',
-            'size' => '12-20-5 YSS',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ], [
-            'type' => 'YSS G-SERIES',
-            'size' => '12-31.5-15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '12-31.5-15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '14-24-5',
-            'price' => 80000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'RCB',
-            'size' => '14-22-5 UHN',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'KTC',
-            'size' => '14-22-5 UHN',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'KYB ELITE',
-            'size' => '15-28-10',
-            'price' => 65000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'GL PRO',
-            'size' => '10-30-12',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '14-26-6',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '14-36-12',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-        ], [
-            'type' => 'MX KING',
-            'size' => '12.5-37.13.4',
-            'price' => 65000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorMXKing->id,
-        ], [
-            'type' => 'VIXION',
-            'size' => '12.5-37.13.4',
-            'price' => 65000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorVixion->id,
-        ], [
-            'type' => 'KTC RACING',
-            'size' => 'LBH 14',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ], [
-            'type' => 'SEAL ADV',
-            'size' => 'SEAL BKG ADV',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorADV->id,
-        ], [
-            'type' => 'SEAL NMAX',
-            'size' => 'SEAL BKG NMAX',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorNmax->id,
-        ]]);
-        // AS SHOCK
-        Sparepart::insert([[
-            'type' => 'NMAX',
-            'size' => 'AS SHOCK',
-            'price' => 600000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorNmax->id,
-        ], [
-            'type' => 'AEROX',
-            'size' => 'AS SHOCK',
-            'price' => 600000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorAerox->id,
-        ], [
-            'type' => 'VARIO',
-            'size' => 'AS SHOCK',
-            'price' => 350000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => null,
-        ], [
-            'type' => 'BEAT FI',
-            'size' => 'AS SHOCK',
-            'price' => 350000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorBeatFI->id,
-        ], [
-            'type' => 'CB 150',
-            'size' => 'AS SHOCK',
-            'price' => 850000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorCB150R->id,
-        ], [
-            'type' => 'CBR 150R FACELIFT',
-            'size' => 'AS SHOCK',
-            'price' => 850000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorCBR150R->id,
-        ]]);
-        // SEAL SHOCK DEPAN
-        Sparepart::insert([[
-            'type' => 'NMAX',
-            'size' => '3 BH',
-            'price' => 80000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorNmax->id,
-        ], [
-            'type' => 'SUPRA',
-            'size' => 'GN5',
-            'price' => 60000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ], [
-            'type' => 'VIXION',
-            'size' => '3Ci',
-            'price' => 100000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorVixion->id,
-        ], [
-            'type' => 'XMAX',
-            'size' => '3Ci',
-            'price' => 150000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorXmax->id,
-        ], [
-            'type' => 'CB/CBR',
-            'size' => '51490-KWL 003',
-            'price' => 300000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-        ]]);
-        // PER DOWNSIZE
-        Sparepart::insert([[
-            'type' => 'NMAX',
-            'size' => 'PER DOWN SIZE',
-            'price' => 20000,
-            'qty' => 100,
-            'category' => 'per',
-            'motor_id' => $motorNmax->id,
-        ], [
-            'type' => 'AEROX',
-            'size' => 'PER DOWN SIZE',
-            'price' => 8000,
-            'qty' => 100,
-            'category' => 'per',
-            'motor_id' => $motorAerox->id,
-        ], [
-            'type' => 'VARIO',
-            'size' => 'PER DOWN SIZE',
-            'price' => 8000,
-            'qty' => 100,
-            'category' => 'per',
-            'motor_id' => null,
-        ]]);
+            // AS Category - dari foto 1
+            [
+                "name" => "AS belakang NMAX",
+                "category" => "AS BELAKANG",
+                "qty" => 100,
+                "price" => 60000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS belakang ADV",
+                "category" => "AS BELAKANG",
+                "qty" => 100,
+                "price" => 60000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS belakang CRF",
+                "category" => "AS BELAKANG",
+                "qty" => 100,
+                "price" => 80000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS Depan Vario",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 350000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS Depan PCX",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 500000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS Depan NMAX",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 600000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS Depan VCx 150",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 500000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS Depan VCCX 160",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 600000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS Depan AEROX",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 80000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "AS depan vesmet standar",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 50000, // Tidak terlihat jelas di foto, menggunakan estimasi
+                "motor_id" => null,
+            ],
+            [
+                "name" => "As YSS",
+                "category" => "AS",
+                "qty" => 100,
+                "price" => 70000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
 
-        // 9. SEED SEAL PER GERAI
-        // Seal Shock
-        Seal::insert([[
-            'type' => 'KTC COPY',
-            'size' => '12.5-32.15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'RCB COPY',
-            'size' => '12.5-32.15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'KTC RACING',
-            'size' => '14-22-5 USH',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'YSS G-SPORT',
-            'size' => '12-20-5 YSS',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'YSS G-SERIES',
-            'size' => '12-31.5-15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '12-31.5-15',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '14-24-5',
-            'price' => 80000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'RCB',
-            'size' => '14-22-5 UHN',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'KTC',
-            'size' => '14-22-5 UHN',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'KYB ELITE',
-            'size' => '15-28-10',
-            'price' => 65000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'GL PRO',
-            'size' => '10-30-12',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '14-26-6',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'BANYAK TYPE',
-            'size' => '14-36-12',
-            'price' => 50000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => NULL,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'MX KING',
-            'size' => '12.5-37.13.4',
-            'price' => 65000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorMXKing->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'VIXION',
-            'size' => '12.5-37.13.4',
-            'price' => 65000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorVixion->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'KTC RACING',
-            'size' => 'LBH 14',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'SEAL ADV',
-            'size' => 'SEAL BKG ADV',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorADV->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'SEAL NMAX',
-            'size' => 'SEAL BKG NMAX',
-            'price' => 40000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorNmax->id,
-            'gerai_id' => $geraiBekasi->id,
-        ]]);
-        // AS SHOCK
-        Seal::insert([[
-            'type' => 'NMAX',
-            'size' => 'AS SHOCK',
-            'price' => 600000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorNmax->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'AEROX',
-            'size' => 'AS SHOCK',
-            'price' => 600000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorAerox->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'VARIO',
-            'size' => 'AS SHOCK',
-            'price' => 350000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'BEAT FI',
-            'size' => 'AS SHOCK',
-            'price' => 350000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorBeatFI->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'CB 150',
-            'size' => 'AS SHOCK',
-            'price' => 850000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorCB150R->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'CBR 150R FACELIFT',
-            'size' => 'AS SHOCK',
-            'price' => 850000,
-            'qty' => 100,
-            'category' => 'as',
-            'motor_id' => $motorCBR150R->id,
-            'gerai_id' => $geraiBekasi->id,
-        ]]);
-        // SEAL SHOCK DEPAN
-        Seal::insert([[
-            'type' => 'NMAX',
-            'size' => '3 BH',
-            'price' => 80000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorNmax->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'SUPRA',
-            'size' => 'GN5',
-            'price' => 60000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'VIXION',
-            'size' => '3Ci',
-            'price' => 100000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorVixion->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'XMAX',
-            'size' => '3Ci',
-            'price' => 150000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => $motorXmax->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'CB/CBR',
-            'size' => '51490-KWL 003',
-            'price' => 300000,
-            'qty' => 100,
-            'category' => 'seal',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ]]);
-        // PER DOWNSIZE
-        Seal::insert([[
-            'type' => 'NMAX',
-            'size' => 'PER DOWN SIZE',
-            'price' => 20000,
-            'qty' => 100,
-            'category' => 'per',
-            'motor_id' => $motorNmax->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'AEROX',
-            'size' => 'PER DOWN SIZE',
-            'price' => 8000,
-            'qty' => 100,
-            'category' => 'per',
-            'motor_id' => $motorAerox->id,
-            'gerai_id' => $geraiBekasi->id,
-        ], [
-            'type' => 'VARIO',
-            'size' => 'PER DOWN SIZE',
-            'price' => 8000,
-            'qty' => 100,
-            'category' => 'per',
-            'motor_id' => null,
-            'gerai_id' => $geraiBekasi->id,
-        ]]);
+            // PER Category - dari foto 1
+            [
+                "name" => "Per Downsize",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 15000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Per downsize aerox",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 27000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Per downsize NMAX/PCX",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 150000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Per Downsize YSS",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 15000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Per downsize vario",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 15000, // Harga jual dari foto (set)
+                "motor_id" => null,
+            ],
 
-        User::insert([["username" => "admin pusat", "password" => Hash::make("12345"), "gerai_id" => 1, "role" => "ADMIN"], ["username" => "admin depok", "password" => Hash::make("12345"), "role" => "ADMIN", "gerai_id" => 2], ["username" => "purchasing", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "GUDANG"], ["username" => "ceo", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "CEO"]]);
+            // OLI Category - dari foto 1
+            [
+                "name" => "200ML",
+                "category" => "OLI",
+                "qty" => 100,
+                "price" => 150000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "500ML",
+                "category" => "OLI",
+                "qty" => 100,
+                "price" => 150000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+            [
+                "name" => "Karet blader YSS",
+                "category" => "OLI",
+                "qty" => 100,
+                "price" => 72000, // Harga jual dari foto
+                "motor_id" => null,
+            ],
+        ]);
+        Seal::insert([
+            // SEAL Category - dari foto 2
+            [
+                "name" => "3HB - 30x40,5x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 1
+            ],
+            [
+                "name" => "GN5 - 26x37x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 50000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 2
+            ],
+            [
+                "name" => "KC5 - 31x43x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 120000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 3
+            ],
+            [
+                "name" => "K84 CRF - 37x50x10",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 230000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 4
+            ],
+            [
+                "name" => "KWL - 37x50x11",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 240000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 5
+            ],
+            [
+                "name" => "3CI/5BP - 33x45x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 140000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 6
+            ],
+            [
+                "name" => "Vesmet Std - 14x34x14",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 65000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 7
+            ],
+            [
+                "name" => "KLX TELECOPIC - 33x46x11",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 25000, // Estimasi dari range harga
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 8
+            ],
+            [
+                "name" => "Seal depan B48 R15 - 37x49,1X10",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 300000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 9
+            ],
+            [
+                "name" => "45p 3145-00",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 200000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 10
+            ],
+            [
+                "name" => "USD Real Jump - 48x58x10,5",
+                "category" => "SEAL DEPAN",
+                "qty" => 100,
+                "price" => 480000, // Harga jual dari foto
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 11
+            ],
+            [
+                "name" => "LBH 12 - 12x20X4,5/6",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 50000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 12
+            ],
+            [
+                "name" => "LBH 14 - 14 X 22 X 4,5/6",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 13
+            ],
+            [
+                "name" => "YSS - 12x31,5x15",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 50000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 14
+            ],
+            [
+                "name" => "YSS - 12,5x32x15",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 50000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 15
+            ],
+            [
+                "name" => "Ohlins - 14x24x5",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 80000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 16
+            ],
+            [
+                "name" => "USH - 14x22x5",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 17
+            ],
+            [
+                "name" => "NOK - 10x30x12",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 18
+            ],
+            [
+                "name" => "RSD ST - 14x36x12",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 19
+            ],
+            [
+                "name" => "USH CRF/KLX blkng - 12x24x5",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 60000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 20
+            ],
+            [
+                "name" => "UHN - 14x24x6",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 65000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 21
+            ],
+            [
+                "name" => "Seal KYB - 15x28x10",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 70000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 22
+            ],
+            [
+                "name" => "Seal Vesmet blkng - 10x28x13,4",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 65000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 23
+            ],
+            [
+                "name" => "Seal belakang NMAX",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 24
+            ],
+            [
+                "name" => "Seal belakang ADV",
+                "category" => "SEAL BELAKANG",
+                "qty" => 100,
+                "price" => 40000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 25
+            ],
+            // AS Category - dari foto 1
+            [
+                "name" => "AS belakang NMAX",
+                "category" => "AS BELAKANG",
+                "qty" => 100,
+                "price" => 60000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 26
+            ],
+            [
+                "name" => "AS belakang ADV",
+                "category" => "AS BELAKANG",
+                "qty" => 100,
+                "price" => 60000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 27
+            ],
+            [
+                "name" => "AS belakang CRF",
+                "category" => "AS BELAKANG",
+                "qty" => 100,
+                "price" => 80000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 28
+            ],
+            [
+                "name" => "AS Depan Vario",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 350000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 29
+            ],
+            [
+                "name" => "AS Depan PCX",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 500000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 30
+            ],
+            [
+                "name" => "AS Depan NMAX",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 600000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 31
+            ],
+            [
+                "name" => "AS Depan VCx 150",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 500000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 32
+            ],
+            [
+                "name" => "AS Depan VCCX 160",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 600000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 33
+            ],
+            [
+                "name" => "AS Depan AEROX",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 80000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 34
+            ],
+            [
+                "name" => "AS depan vesmet standar",
+                "category" => "AS DEPAN",
+                "qty" => 100,
+                "price" => 50000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 35
+            ],
+            [
+                "name" => "As YSS",
+                "category" => "AS",
+                "qty" => 100,
+                "price" => 70000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 36
+            ],
+            // PER Category - dari foto 1
+            [
+                "name" => "Per Downsize",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 15000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 37
+            ],
+            [
+                "name" => "Per downsize aerox",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 27000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 38
+            ],
+            [
+                "name" => "Per downsize NMAX/PCX",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 150000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 39
+            ],
+            [
+                "name" => "Per Downsize YSS",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 15000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 40
+            ],
+            [
+                "name" => "Per downsize vario",
+                "category" => "PER",
+                "qty" => 100,
+                "price" => 15000, // Harga jual dari foto (set)
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 41
+            ],
+            // OLI Category - dari foto 1
+            [
+                "name" => "200ML",
+                "category" => "OLI",
+                "qty" => 100,
+                "price" => 150000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 42
+            ],
+            [
+                "name" => "500ML",
+                "category" => "OLI",
+                "qty" => 100,
+                "price" => 150000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 43
+            ],
+            [
+                "name" => "Karet blader YSS",
+                "category" => "ACC",
+                "qty" => 100,
+                "price" => 72000,
+                "motor_id" => null,
+                "gerai_id" => 1,
+                "sparepart_id" => 44
+            ],
+        ]);
         // $warehouseSealBeatStreetGN5 = WarehouseSeal::create([
         //     'cc_range' => 'GN5',
         //     'price' => 60000,

@@ -23,14 +23,15 @@ class Gerai extends Model
     {
         return $this->hasMany(Seal::class, 'gerai_id');
     }
+
     public function customers()
     {
         return $this->hasMany(Customer::class);
     }
 
-    public function pelanggans()
+    public function customerSpareparts()
     {
-        return $this->hasMany(Customer::class);
+        return $this->hasMany(CustomerSparepart::class, 'gerai_id');
     }
 
     public function stockRequests()
@@ -42,13 +43,6 @@ class Gerai extends Model
     {
         return $this->hasMany(Expense::class);
     }
-
-    // public function expenseCategories()
-    // {
-    //     return $this->belongsToMany(ExpenseCategory::class, 'expense_category_gerai')
-    //         ->withPivot('daily_cost', 'monthly_cost')
-    //         ->withTimestamps();
-    // }
 
     public function netRevenues()
     {

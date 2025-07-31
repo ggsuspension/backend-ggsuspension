@@ -36,8 +36,9 @@ class SealController extends Controller
         $validated = $request->validate([
             'qty' => 'integer',
         ]);
-        $seal->update($validated);
-        return response()->json($seal);
+        $data = Seal::where('sparepart_id', $seal->id)->update($validated);
+        // $seal->update($validated);
+        return response()->json($request->all());
     }
 
     public function deleteSeal(Seal $seal): JsonResponse
