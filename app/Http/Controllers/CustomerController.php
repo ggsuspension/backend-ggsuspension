@@ -178,7 +178,6 @@ class CustomerController extends Controller
 
         try {
             DB::beginTransaction();
-
             // Update data customer
             $customer->update($request->only([
                 'nama',
@@ -249,7 +248,6 @@ class CustomerController extends Controller
 
             // Muat ulang customer dengan relasi spareparts dan gerai
             $customer->load('spareparts.sparepart', 'spareparts.gerai');
-
             return response()->json(['success' => true, 'data' => $customer], 200);
         } catch (\Exception $e) {
             DB::rollBack();

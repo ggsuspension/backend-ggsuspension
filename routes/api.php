@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+// Route::post('/auth/login', [AuthController::class, 'guest']);
 Route::post('/orders/create', [OrderController::class, 'store']);
 
 
@@ -106,13 +107,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/user', function (Request $request) {
         return response()->json($request->user());
     });
-
-    // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Antrian Routes
     Route::prefix('antrian')->group(function () {
-        Route::put('/{id}', [AntrianController::class, 'updateAntrian'])->middleware('role:ADMIN'); // Assuming role:ADMIN is a custom middleware
+        Route::put('/{id}', [AntrianController::class, 'updateAntrian'])->middleware('role:ADMIN');
         Route::post('/finish/{id}', [AntrianController::class, 'finishOrder']);
         Route::post('/cancel/{id}', [AntrianController::class, 'cancelOrder']);
     });

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\WarehouseSealResource;
 use App\Models\Sparepart;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;

@@ -14,12 +14,15 @@ class CustomerSparepartController extends Controller
     public function index()
     {
         $today = Carbon::today();
-        $data = CustomerSparepart::whereDate('created_at', $today)->with(['sparepart', 'gerai'])->get()->map(function ($customerSparepart) {
+        $data = CustomerSparepart::with(['sparepart', 'gerai', 'customer'])->get()->map(function ($customerSparepart) {
             return [
                 'id' => $customerSparepart->id,
                 'gerai_id' => $customerSparepart->gerai_id,
                 'gerai_name' => $customerSparepart->gerai->name,
-                'sparepart_name' => $customerSparepart->sparepart->category." - ".$customerSparepart->sparepart->name,
+                'status' => $customerSparepart->customer->status,
+                'sparepart_price' => $customerSparepart->sparepart->price,
+                'sparepart_name' => $customerSparepart->sparepart->category . " - " . $customerSparepart->sparepart->name,
+                'motor' => $customerSparepart->customer->motor,
                 'qty' => $customerSparepart->qty,
                 'created_at' => $customerSparepart->created_at,
             ];

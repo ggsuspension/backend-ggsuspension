@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('qty');
             $table->integer('price');
             $table->timestamps();
-
             // Foreign Keys
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('sparepart_id')->references('id')->on('spareparts')->onDelete('cascade');

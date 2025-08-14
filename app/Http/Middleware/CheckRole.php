@@ -14,8 +14,6 @@ class CheckRole
 
     {
         $user = Auth::guard('api')->user();
-
-        // Periksa apakah role ada di dalam objek user
         Log::info('User role: ', ['role' => $user->role]);  // Perbaiki untuk mengakses 'role' langsung
 
         if (!$user) {

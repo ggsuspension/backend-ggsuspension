@@ -28,9 +28,7 @@ class AuthController extends Controller
                 'gerai_id' => $validated['gerai_id'] ?? null,
                 'role' => $validated['role'] ?? 'ADMIN',
             ]);
-
             $token = JWTAuth::fromUser($user);
-
             return response()->json([
                 'token' => $token,
                 'geraiId' => $user->gerai_id,
@@ -42,6 +40,25 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Registration failed', 'error' => $e->getMessage()], 500);
         }
+    }
+
+    public function guest(): JsonResponse
+    {
+        $user = new User();
+        $user->username = "guest";
+        $user->role = "GUEST";
+          try {
+                $token = JWTAuth::fromUser($user);
+            } catch (JWTException $e) {
+                Log::error('JWT generation error: ' . $e->getMessage());
+                return response()->json(['message' => 'Could not create token', 'error' => $e->getMessage()], 500);
+            }
+             return response()->json([
+                'token' => $token,
+                'geraiId' => $user->gerai_id,
+                'geraiName' => $user->gerai ? $user->gerai->name : null,
+                'role' => $user->role,
+            ]);
     }
 
     public function login(Request $request): JsonResponse
@@ -68,7 +85,6 @@ class AuthController extends Controller
                 Log::error('JWT generation error: ' . $e->getMessage());
                 return response()->json(['message' => 'Could not create token', 'error' => $e->getMessage()], 500);
             }
-
             return response()->json([
                 'token' => $token,
                 'geraiId' => $user->gerai_id,

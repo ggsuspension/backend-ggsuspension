@@ -12,6 +12,10 @@ class CustomerSparepart extends Model
     {
         return $this->belongsTo(Sparepart::class, 'sparepart_id');
     }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
 
     public function gerai()
     {
