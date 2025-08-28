@@ -25,6 +25,10 @@ class StockRequest extends Model
         return $this->belongsTo(Gerai::class);
     }
 
+    public function historySparepart(){
+        return $this->hasOne(HistorySparepart::class);
+    }
+
     public function warehouseSeal()
     {
         return $this->belongsTo(Sparepart::class, 'sparepart_id');

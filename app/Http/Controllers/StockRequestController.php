@@ -3,14 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RequestStatus;
+use App\Models\HistorySparepart;
 use App\Models\Seal;
 use App\Models\Sparepart;
 use App\Models\StockRequest;
-use App\Models\WarehouseSeal;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class StockRequestController extends Controller
 {
@@ -25,77 +28,94 @@ class StockRequestController extends Controller
     public function getAllStockRequests(): JsonResponse
     {
         $requests = StockRequest::with(['gerai', 'warehouseSeal.motor'])->get();
-        Log::info('Stock requests fetched: ' . json_encode($requests));
         return response()->json(['data' => $requests], 200);
     }
 
     public function requestSeal(Request $request): JsonResponse
     {
-        Log::info('Request data received:', $request->all());
+        $dataRequest = $request->all();
 
-        $validated = $request->validate([
-            'gerai_id' => 'required|exists:gerais,id',
-            'sparepart_id' => 'required|exists:spareparts,id',
-            'qty_requested' => 'required|integer|min:1',
-        ], [
-            'gerai_id.required' => 'Gerai ID harus diisi.',
-            'gerai_id.exists' => 'Gerai dengan ID tersebut tidak ditemukan.',
-            'sparepart_id.required' => 'Sparepart ID harus diisi.',
-            'sparepart_id.exists' => 'Sparepart dengan ID tersebut tidak ditemukan.',
-            'qty_requested.required' => 'Jumlah yang diminta harus diisi.',
-            'qty_requested.integer' => 'Jumlah yang diminta harus berupa angka bulat.',
-            'qty_requested.min' => 'Jumlah yang diminta minimal 1.'
-        ]);
-
-        try {
-            DB::beginTransaction();
-            $sparepart = Sparepart::findOrFail($validated['sparepart_id']);
-            Log::info('Stock check', [
-                'sparepart_id' => $sparepart->id,
-                'qty' => $sparepart->qty,
-                'qty_requested' => $validated['qty_requested'],
-                'comparison' => $sparepart->qty < $validated['qty_requested']
+        DB::beginTransaction();
+        // Validasi basic structure
+        if (empty($dataRequest) || !is_array($dataRequest)) {
+            throw new \Exception('Data tidak valid');
+        }
+        // Validate each item
+        $validated = [];
+        foreach ($dataRequest as $index => $item) {
+            $itemValidator = Validator::make($item, [
+                'gerai_id' => 'required|exists:gerais,id',
+                'sparepart_id' => 'required|exists:spareparts,id',
+                'qty_requested' => 'required|integer|min:1',
+            ], [
+                'gerai_id.required' => "Gerai ID pada item ke-" . ($index + 1) . " harus diisi.",
+                'gerai_id.exists' => "Gerai pada item ke-" . ($index + 1) . " tidak ditemukan.",
+                'sparepart_id.required' => "Sparepart ID pada item ke-" . ($index + 1) . " harus diisi.",
+                'sparepart_id.exists' => "Sparepart pada item ke-" . ($index + 1) . " tidak ditemukan.",
+                'qty_requested.required' => "Jumlah pada item ke-" . ($index + 1) . " harus diisi.",
+                'qty_requested.integer' => "Jumlah pada item ke-" . ($index + 1) . " harus berupa angka.",
+                'qty_requested.min' => "Jumlah pada item ke-" . ($index + 1) . " minimal 1.",
             ]);
 
-            if ($sparepart->qty < $validated['qty_requested']) {
-                return response()->json([
-                    'error' => 'Stok tidak cukup',
-                    'message' => 'Stok di gudang tidak mencukupi untuk permintaan ini'
-                ], 400);
+            if ($itemValidator->fails()) {
+                throw ValidationException::withMessages($itemValidator->errors()->toArray());
             }
 
-            $stockRequest = StockRequest::create([
-                'gerai_id' => $validated['gerai_id'],
-                'sparepart_id' => $validated['sparepart_id'],
-                'qty_requested' => $validated['qty_requested'],
-                'status' => RequestStatus::PENDING,
-            ]);
-
-            DB::commit();
-
-            Log::info('Stock request created successfully', [
-                'stock_request_id' => $stockRequest->id,
-                'gerai_id' => $validated['gerai_id'],
-                'qty_requested' => $validated['qty_requested'],
-                'created_at' => $stockRequest->created_at->toISOString(),
-            ]);
-
-            return response()->json([
-                'data' => $stockRequest,
-                'message' => 'Permintaan stok berhasil dibuat'
-            ], 201);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Failed to create stock request', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'input' => $validated
-            ]);
-            return response()->json([
-                'error' => 'Kesalahan server',
-                'message' => 'Gagal membuat permintaan stok'
-            ], 500);
+            $validated[] = $itemValidator->validated();
         }
+        $dataToInsert = [];
+        foreach ($validated as $item) {
+            $dataToInsert[] = array_merge($item, [
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+        StockRequest::insert($dataToInsert);
+        DB::commit();
+        return response()->json(['message' => 'Data berhasil disimpan']);
+
+        // try {
+        //     DB::beginTransaction();
+        //     $sparepart = Sparepart::findOrFail($validated['sparepart_id']);
+        //     if ($sparepart->qty < $validated['qty_requested']) {
+        //         return response()->json([
+        //             'error' => 'Stok tidak cukup',
+        //             'message' => 'Stok di gudang tidak mencukupi untuk permintaan ini'
+        //         ], 400);
+        //     }
+
+        //     $stockRequest = StockRequest::create([
+        //         'gerai_id' => $validated['gerai_id'],
+        //         'sparepart_id' => $validated['sparepart_id'],
+        //         'qty_requested' => $validated['qty_requested'],
+        //         'status' => RequestStatus::PENDING,
+        //     ]);
+
+        //     DB::commit();
+
+        //     Log::info('Stock request created successfully', [
+        //         'stock_request_id' => $stockRequest->id,
+        //         'gerai_id' => $validated['gerai_id'],
+        //         'qty_requested' => $validated['qty_requested'],
+        //         'created_at' => $stockRequest->created_at->toISOString(),
+        //     ]);
+
+        //     return response()->json([
+        //         'data' => $stockRequest,
+        //         'message' => 'Permintaan stok berhasil dibuat'
+        //     ], 201);
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     Log::error('Failed to create stock request', [
+        //         'error' => $e->getMessage(),
+        //         'trace' => $e->getTraceAsString(),
+        //         'input' => $validated
+        //     ]);
+        //     return response()->json([
+        //         'error' => 'Kesalahan server',
+        //         'message' => 'Gagal membuat permintaan stok'
+        //     ], 500);
+        // }
     }
 
     public function approveStockRequest($stockRequestId): JsonResponse
@@ -112,7 +132,6 @@ class StockRequestController extends Controller
                 ], 400);
             }
             $warehouseSeal = $stockRequest->warehouseSeal;
-
             if ($warehouseSeal->qty < $stockRequest->qty_requested) {
                 DB::rollBack();
                 return response()->json([
@@ -127,7 +146,16 @@ class StockRequestController extends Controller
             $stockRequest->status = RequestStatus::APPROVED;
             $stockRequest->approved_at = now();
             $stockRequest->save();
-
+            $sparepartData = Seal::where(['gerai_id' => $stockRequest->gerai_id, 'sparepart_id' => $stockRequest->sparepart_id])->first();
+            if (gettype($sparepartData)!="NULL") {
+                $sparepartApproved = Seal::where(['gerai_id' => $stockRequest->gerai_id, 'sparepart_id' => $stockRequest->sparepart_id])->first()->update(['qty' => $sparepartData['qty'] + $stockRequest->qty_requested]);    
+                Log::info("Seal updated successfully", ['spareparts' => $sparepartApproved]); 
+                DB::commit();  
+                return response()->json([
+                    'message' => 'Permintaan stok disetujui dan Seal telah disimpan',
+                    'data' => $sparepartApproved
+                ], 200);
+            }
             $sparepartApproved = Seal::create([
                 'category' => $warehouseSeal->category,
                 'name' => $warehouseSeal->name,
@@ -138,17 +166,9 @@ class StockRequestController extends Controller
                 'gerai_id' => $stockRequest->gerai_id,
             ]);
             DB::commit();
-
-            Log::info('Stock request approved successfully', [
-                'stock_request_id' => $stockRequest->id,
-                'warehouse_seal_id' => $warehouseSeal->id,
-                'qty_requested' => $stockRequest->qty_requested,
-                'remaining_warehouse_qty' => $warehouseSeal->qty,
-            ]);
-
             return response()->json([
                 'message' => 'Permintaan stok disetujui dan Seal telah disimpan',
-                'data' => $sparepartApproved
+                'data' => $sparepartApproved,
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();

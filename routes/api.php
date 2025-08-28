@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerSparepartController;
 use App\Http\Controllers\DailyNetRevenueController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\GeraiController;
+use App\Http\Controllers\HistorySparepartController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MotorController;
 use App\Http\Controllers\MotorPartController;
@@ -24,10 +25,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
-// Route::post('/auth/login', [AuthController::class, 'guest']);
 Route::post('/orders/create', [OrderController::class, 'store']);
-
-
 Route::get('/customers/{customer}', [CustomerController::class, 'show']);
 Route::post('/customers/{id}/claim-warranty', [CustomerController::class, 'claimWarranty']);
 Route::get('/customers', [CustomerController::class, 'getByDateRange']);
@@ -89,8 +87,6 @@ Route::prefix('daily-net-revenue')->group(function () {
     Route::get('/daily-income-expense', [DailyNetRevenueController::class, 'getIncomeExpenseDaily']);
     Route::get('/periodic-trend', [DailyNetRevenueController::class, 'getPeriodicTrend']);
     Route::get('/', [DailyNetRevenueController::class, 'getAllDailyNetRevenues']);
-    // Rute dinamis dipindah ke bawah
-    // Route::get('/{id}', [DailyNetRevenueController::class, 'getDailyNetRevenue']);
     Route::put('/{id}', [DailyNetRevenueController::class, 'updateDailyNetRevenue']);
     Route::delete('/{id}', [DailyNetRevenueController::class, 'deleteDailyNetRevenue']);
 });
@@ -100,6 +96,7 @@ Route::resource('customer-profile', CustomerProfileController::class);
 Route::resource('customer', CustomerController::class);
 Route::resource('image', ImageController::class);
 Route::resource("customer-sparepart", CustomerSparepartController::class);
+Route::apiResource('history-sparepart', HistorySparepartController::class);
 
 // Authenticated Routes (JWT with auth:api)
 Route::middleware('auth:api')->group(function () {

@@ -64,7 +64,7 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'nama' => 'required|string',
             'plat_motor' => 'required|string',
             'noWA' => 'required|string',

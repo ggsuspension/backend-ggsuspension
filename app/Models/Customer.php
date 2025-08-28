@@ -12,6 +12,7 @@ class Customer extends Model
         'sparepart' => 'array'
     ];
 
+
     public static function boot()
     {
         parent::boot();
