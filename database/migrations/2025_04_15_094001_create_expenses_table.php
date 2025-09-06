@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('gerai_id')->nullable()->constrained()->onDelete('set null');
             $table->integer('amount');
-            $table->string('description')->nullable();
+            $table->integer('totalAmount');
+            $table->string('detail')->nullable();
+            $table->integer('qty');
             $table->dateTime('date');
             $table->timestamps();
             $table->index('gerai_id');

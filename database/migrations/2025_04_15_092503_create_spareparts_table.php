@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('category');
             $table->integer('price');
+            $table->integer('purchase_price');
             $table->integer('qty');
             $table->unsignedBigInteger('motor_id')->nullable();
             $table->foreign('motor_id')->references('id')->on('motors')->onDelete('cascade');

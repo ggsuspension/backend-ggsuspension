@@ -11,13 +11,7 @@ class Expense extends Model
 
     protected $table = 'expenses';
 
-    protected $fillable = [
-        'gerai_id',
-        'amount',
-        'description',
-        'date',
-        'category',
-    ];
+    protected $guarded=['id'];
 
     protected $casts = [
         'date' => 'datetime',
@@ -25,6 +19,7 @@ class Expense extends Model
         'updated_at' => 'datetime',
         'amount' => 'float',
     ];
+
 
     public function gerai()
     {

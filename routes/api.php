@@ -72,6 +72,7 @@ Route::prefix('seals')->group(function () {
 Route::prefix('expenses')->group(function () {
     Route::post('/create', [ExpenseController::class, 'createExpense']);
     Route::get('/all-gerais', [ExpenseController::class, 'getAllExpensesAll']);
+    Route::get('/get-by-date-range', [ExpenseController::class, 'getExpensesByDateRange']);
     Route::get('/all', [ExpenseController::class, 'getAllExpenses']);
 });
 

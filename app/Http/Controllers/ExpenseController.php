@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\CalculateDailyNetRevenue;
-use App\Models\DailyNetRevenue;
 use App\Models\Expense;
 use App\Models\Gerai;
 use Carbon\Carbon;
@@ -16,6 +15,34 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class ExpenseController extends Controller
 {
     public function getAllExpenses(Request $request)
+    {
+        try {
+            $geraiId = $request->query('gerai_id');
+
+            // Validasi parameter
+            if (!$geraiId ) {
+                Log::error('Missing required parameters for getAllExpenses', [
+                    'gerai_id' => $geraiId,
+                ]);
+                return response()->json(['error' => 'Missing required parameters'], 400);
+            }
+
+            $data = Expense::where('gerai_id', $geraiId)
+                ->get();
+
+            // Bungkus data dalam format yang konsisten
+            return response()->json(['data' => $data]);
+        } catch (\Exception $e) {
+            Log::error('Get All Expenses failed:', [
+                'error' => $e->getMessage(),
+                'gerai_id' => $geraiId ?? null,
+                'start_date' => $startDate ?? null,
+                'end_date' => $endDate ?? null,
+            ]);
+            return response()->json(['error' => 'Failed to fetch expenses: ' . $e->getMessage()], 500);
+        }
+    }
+    public function getExpensesByDateRange(Request $request)
     {
         try {
             $geraiId = $request->query('gerai_id');
@@ -63,6 +90,7 @@ class ExpenseController extends Controller
             return response()->json(['error' => 'Failed to fetch expenses: ' . $e->getMessage()], 500);
         }
     }
+
     public function getTotalExpenses()
     {
         $data = Expense::all();
@@ -80,13 +108,6 @@ class ExpenseController extends Controller
             $startDate = Carbon::parse($validated['startDate'])->startOfDay();
             $endDate = Carbon::parse($validated['endDate'])->endOfDay();
             $cacheKey = "expenses_all_{$startDate->toDateString()}_{$endDate->toDateString()}";
-
-            Log::info('getAllExpensesAll called', [
-                'startDate' => $startDate->toDateString(),
-                'endDate' => $endDate->toDateString(),
-                'request_ip' => $request->ip(),
-                'user_role' => JWTAuth::user()->role ?? 'unknown',
-            ]);
 
             Cache::forget($cacheKey);
 
@@ -147,22 +168,26 @@ class ExpenseController extends Controller
     {
         return DB::transaction(function () use ($request) {
             try {
-                Log::info("Creating expense", ['request' => $request->all()]);
                 $validated = $request->validate([
                     'geraiId' => 'nullable|exists:gerais,id',
                     'category' => 'required|string',
-                    'description' => 'nullable|string|max:255',
+                    'detail' => 'string|max:255',
+                    'qty' => 'required|numeric|min:0',
                     'amount' => 'required|numeric|min:0',
+                    'totalAmount' => 'required|numeric|min:0',
                     'date' => 'required|date',
                 ]);
-
+                
                 $expense = Expense::create([
                     'gerai_id' => $validated['geraiId'],
                     'category' => $validated['category'],
-                    'description' => $validated['description'] ?? 'Biaya tanpa deskripsi',
+                    'detail' => $validated['detail'] ,
+                    'qty' => $validated['qty'] ,
                     'amount' => $validated['amount'],
+                    'totalAmount' => $validated['totalAmount'],
                     'date' => Carbon::parse($validated['date'])->startOfDay(),
                 ]);
+                Log::info("Expense detail",[ $expense->detail]);
 
                 if ($validated['geraiId']) {
                     Log::info("Dispatching CalculateDailyNetRevenue", [
@@ -172,16 +197,15 @@ class ExpenseController extends Controller
                     CalculateDailyNetRevenue::dispatchSync($validated['geraiId'], $validated['date']);
                 }
 
-                Log::info("Expense created successfully", ['expense_id' => $expense->id]);
-
                 return response()->json([
                     'id' => $expense->id,
                     'geraiId' => $expense->gerai_id,
                     'category' => $expense->category,
-                    'description' => $expense->description,
-                    'amount' => (float) $expense->amount,
+                    'qty' => $expense->qty,
+                    'detail' => $expense->detail,
+                    'totalAmount' => (float) $expense->totalAmount,
                     'date' => $expense->date->format('Y-m-d\TH:i:s.v\Z'),
-                ], 201);
+                ], 200);
             } catch (\Illuminate\Validation\ValidationException $e) {
                 Log::error('Validation failed:', ['errors' => $e->errors(), 'request' => $request->all()]);
                 return response()->json(['error' => $e->errors()], 422);
