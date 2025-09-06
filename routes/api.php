@@ -148,6 +148,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('/update/{seal}', [SealController::class, 'updateSeal']);
         Route::delete('/delete/{id}', [SealController::class, 'deleteSeal']);
         Route::post('/stock-requests', [StockRequestController::class, 'requestSeal']);
+        Route::put('/stock-requests/{stockRequest}', [StockRequestController::class, 'updateStockRequest']);
         Route::post('/stock-requests/{stockRequest}/approve', [StockRequestController::class, 'approveStockRequest']);
         Route::post('/stock-requests/{stockRequest}/rejected', [StockRequestController::class, 'rejectStockRequest']);
     });

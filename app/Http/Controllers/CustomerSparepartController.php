@@ -13,20 +13,36 @@ class CustomerSparepartController extends Controller
      */
     public function index()
     {
-        $today = Carbon::today();
+        // Mengambil semua data dari tabel pivot CustomerSparepart
+        // dengan relasi yang dibutuhkan (sparepart, gerai, customer)
         $data = CustomerSparepart::with(['sparepart', 'gerai', 'customer'])->get()->map(function ($customerSparepart) {
+
+            // PERBAIKAN LOGIKA DI SINI
+            // Cek apakah sparepart_id ada dan relasi sparepart tidak null
+            if ($customerSparepart->sparepart) {
+                // Jika ADA, ini adalah sparepart yang terdaftar di database
+                $sparepart_name = $customerSparepart->sparepart->category . " - " . $customerSparepart->sparepart->name;
+                $sparepart_price = $customerSparepart->sparepart->price;
+            } else {
+                // Jika TIDAK ADA (null), ini adalah sparepart offline/manual.
+                // Ambil data langsung dari kolom di tabel pivot (customer_sparepart).
+                $sparepart_name = $customerSparepart->name; // 'name' dari sparepart offline
+                $sparepart_price = $customerSparepart->price; // 'price' dari sparepart offline
+            }
+
             return [
                 'id' => $customerSparepart->id,
                 'gerai_id' => $customerSparepart->gerai_id,
                 'gerai_name' => $customerSparepart->gerai->name,
                 'status' => $customerSparepart->customer->status,
-                'sparepart_price' => $customerSparepart->sparepart->price,
-                'sparepart_name' => $customerSparepart->sparepart->category . " - " . $customerSparepart->sparepart->name,
+                'sparepart_price' => $sparepart_price, // Gunakan harga yang sudah ditentukan
+                'sparepart_name' => $sparepart_name, // Gunakan nama yang sudah ditentukan
                 'motor' => $customerSparepart->customer->motor,
                 'qty' => $customerSparepart->qty,
                 'created_at' => $customerSparepart->created_at,
             ];
         });
+
         return response()->json($data);
     }
 

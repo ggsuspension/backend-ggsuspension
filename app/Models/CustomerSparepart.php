@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomerSparepart extends Model
 {
-    protected $fillable = ['customer_id', 'sparepart_id', 'gerai_id', 'qty', 'price'];
+    protected $fillable = ['customer_id', 'sparepart_id', 'gerai_id', 'qty', 'price', 'name',];
 
     public function sparepart()
     {
