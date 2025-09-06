@@ -17,37 +17,53 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $data = Customer::with(['spareparts.sparepart', 'spareparts.gerai'])->get()->map(function ($customer) {
+        // Ambil semua customer dengan relasi yang dibutuhkan
+        $customers = Customer::with(['customerSpareparts.sparepart', 'customerSpareparts.gerai'])->get();
+
+        // Transformasi data untuk frontend
+        $data = $customers->map(function ($customer) {
             return [
                 'id' => $customer->id,
                 'nama' => $customer->nama,
                 'plat_motor' => $customer->plat_motor,
                 'noWA' => $customer->noWA,
                 'gerai' => $customer->gerai,
-                'sudah_chat' => $customer->sudah_chat,
-                'sumber_info' => $customer->sumber_info,
                 'status' => $customer->status,
                 'layanan' => $customer->layanan,
                 'jenis_motor' => $customer->jenis_motor,
                 'harga_service' => $customer->harga_service,
+                'harga_sparepart' => $customer->harga_sparepart,
                 'bagian_motor' => $customer->bagian_motor,
                 'bagian_motor2' => $customer->bagian_motor2,
                 'motor' => $customer->motor,
+                'sumber_info' => $customer->sumber_info,
+                'sudah_chat' => $customer->sudah_chat,
                 'created_at' => $customer->created_at,
-                'updated_at' => $customer->updated_at,
-                'spareparts' => $customer->spareparts->map(function ($sp) {
+                'keterangan' => $customer->keterangan,
+
+                // --- KODE DENGAN PERBAIKAN ADA DI DALAM BAGIAN INI ---
+                'spareparts' => $customer->customerSpareparts->map(function ($cs) {
+
+                    // Cek jika ini sparepart terdaftar (relasi 'sparepart' tidak null)
+                    if ($cs->sparepart) {
+                        $name = $cs->sparepart->name;
+                    } else {
+                        // Jika tidak, ini adalah sparepart manual. Ambil nama dari kolom 'name' di tabel pivot.
+                        $name = $cs->name;
+                    }
+
                     return [
-                        'id' => $sp->sparepart->id,
-                        'sparepart_id' => $sp->sparepart_id,
-                        'gerai_id' => $sp->gerai_id,
-                        'gerai_nama' => $sp->gerai ? $sp->gerai->name : null,
-                        'name' => $sp->sparepart->name,
-                        'price' => $sp->price,
-                        'qty' => $sp->qty,
+                        'customer_sparepart_id' => $cs->id,
+                        'sparepart_id' => $cs->sparepart_id,
+                        'gerai_id' => $cs->gerai_id,
+                        'qty' => $cs->qty,
+                        'price' => $cs->price,
+                        'name' => $name, // Gunakan nama yang sudah ditentukan dengan aman
                     ];
-                })->toArray(),
+                }),
             ];
         });
+
         return response()->json($data);
     }
 
@@ -82,6 +98,9 @@ class CustomerController extends Controller
             'spareparts.*.sparepart_id' => 'required_with:spareparts|exists:spareparts,id',
             'spareparts.*.gerai_id' => 'required_with:spareparts|exists:gerais,id',
             'spareparts.*.qty' => 'required_with:spareparts|integer|min:1',
+            // --- PERBAIKAN VALIDASI ---
+            // Izinkan 'keterangan' bernilai null jika dikirim, atau tidak ada sama sekali.
+            'keterangan' => 'sometimes|nullable|string',
         ]);
 
         DB::beginTransaction();
@@ -102,7 +121,14 @@ class CustomerController extends Controller
                 }
             }
 
-            $customer = Customer::create($request->except('spareparts'));
+            // --- PERBAIKAN LOGIKA PENYIMPANAN ---
+            // Siapkan data, pastikan 'keterangan' memiliki nilai default jika tidak ada di request.
+            $customerData = $request->except('spareparts');
+            $customerData['keterangan'] = $request->input('keterangan', null); // Default ke null jika tidak ada
+
+            // Buat customer dengan data yang sudah disiapkan
+            $customer = Customer::create($customerData);
+
             if ($request->has('spareparts')) {
                 foreach ($request->spareparts as $sparepart) {
                     $sparepartData = Sparepart::findOrFail($sparepart['sparepart_id']);
@@ -153,106 +179,93 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        Log::info('Update customer request:', ['request' => $request->all(), 'customer_id' => $customer->id, 'customer_gerai' => $customer->gerai]);
+        Log::info('Update customer request:', ['request' => $request->all(), 'customer_id' => $customer->id]);
 
         $validated = $request->validate([
             'nama' => 'sometimes|string',
             'plat_motor' => 'sometimes|string',
             'noWA' => 'sometimes|string',
-            'gerai' => 'sometimes|string|exists:gerais,name',
-            'sudah_chat' => 'sometimes|boolean',
-            'sumber_info' => 'sometimes|string',
-            'status' => 'sometimes',
-            'layanan' => 'sometimes|string',
-            'jenis_motor' => 'sometimes|string',
+            'status' => 'sometimes|string',
+            'layanan' => 'sometimes|nullable|string',
+            'jenis_motor' => 'sometimes|nullable|string',
             'harga_service' => 'sometimes|numeric',
-            'harga_sparepart' => 'sometimes|numeric',
-            'bagian_motor' => 'sometimes|string',
-            'bagian_motor2' => 'sometimes',
-            'motor' => 'sometimes|string',
+            'bagian_motor' => 'sometimes|nullable|string',
+            'bagian_motor2' => 'sometimes|nullable|string',
+            'motor' => 'sometimes|nullable|string',
             'spareparts' => 'sometimes|array',
-            'spareparts.*.sparepart_id' => 'required_with:spareparts|exists:spareparts,id',
+            'spareparts.*.sparepart_id' => 'nullable|integer|exists:spareparts,id',
+            'spareparts.*.name' => 'required_if:spareparts.*.sparepart_id,null|string|max:255',
             'spareparts.*.gerai_id' => 'required_with:spareparts|exists:gerais,id',
             'spareparts.*.qty' => 'required_with:spareparts|integer|min:1',
+            'spareparts.*.price' => 'required_with:spareparts|numeric',
+            'keterangan' => 'sometimes|string',
         ]);
 
         try {
             DB::beginTransaction();
-            // Update data customer
-            $customer->update($request->only([
-                'nama',
-                'plat_motor',
-                'noWA',
-                'gerai',
-                'sudah_chat',
-                'sumber_info',
-                'status',
-                'layanan',
-                'jenis_motor',
-                'harga_service',
-                'harga_sparepart',
-                'bagian_motor',
-                'bagian_motor2',
-                'motor'
-            ]));
 
-            // Handle spareparts jika ada
+            // Update data customer utama (kecuali spareparts)
+            $customer->update($request->except('spareparts'));
+
+            // Handle spareparts jika ada dalam request
             if ($request->has('spareparts')) {
-                // Validasi gerai_id sesuai dengan gerai pelanggan
-                $geraiName = $request->has('gerai') ? $request->gerai : $customer->gerai;
-                if (empty($geraiName)) {
-                    throw new \Exception("Nama gerai tidak boleh kosong.");
-                }
-                Log::info('Mencari gerai dengan nama: ' . $geraiName);
-                $gerai = $customer->gerai()->first();
-                if (!$gerai) {
-                    throw new \Exception("Gerai {$geraiName} tidak ditemukan di tabel gerais.");
-                }
-                foreach ($request->spareparts as $index => $sparepart) {
-                    if (!isset($sparepart['gerai_id'])) {
-                        throw new \Exception("gerai_id pada spareparts[{$index}] tidak disertakan.");
-                    }
-                    if ($sparepart['gerai_id'] != $gerai->id) {
-                        throw new \Exception("gerai_id pada spareparts[{$index}] ({$sparepart['gerai_id']}) tidak sesuai dengan gerai pelanggan ({$geraiName}, ID: {$gerai->id}).");
-                    }
-                }
+                // Hapus semua entri sparepart lama untuk sinkronisasi
+                $customer->customerSpareparts()->delete();
 
-                // Hapus sparepart yang tidak ada di request baru
-                CustomerSparepart::where('customer_id', $customer->id)
-                    ->whereNotIn('sparepart_id', collect($validated['spareparts'])->pluck('sparepart_id'))
-                    ->delete();
-
-                // Tambah atau update sparepart
+                // Loop dan buat ulang semua entri sparepart
                 foreach ($validated['spareparts'] as $sparepart) {
-                    $sparepartData = Sparepart::findOrFail($sparepart['sparepart_id']);
-                    CustomerSparepart::updateOrCreate(
-                        [
-                            'customer_id' => $customer->id,
-                            'sparepart_id' => $sparepart['sparepart_id'],
-                            'gerai_id' => $sparepart['gerai_id'],
-                        ],
-                        [
-                            'qty' => $sparepart['qty'],
-                            'price' => $sparepartData->price,
-                        ]
-                    );
+                    $pivotData = [
+                        'customer_id'  => $customer->id,
+                        'gerai_id'     => $sparepart['gerai_id'],
+                        'qty'          => $sparepart['qty'],
+                        'price'        => $sparepart['price'],
+                        'sparepart_id' => $sparepart['sparepart_id'],
+                    ];
+
+                    // Jika ini sparepart manual, simpan juga namanya di tabel pivot
+                    if (is_null($sparepart['sparepart_id'])) {
+                        $pivotData['name'] = $sparepart['name'];
+                    }
+
+                    CustomerSparepart::create($pivotData);
                 }
 
-                // Hitung ulang harga_sparepart
-                $harga_sparepart = CustomerSparepart::where('customer_id', $customer->id)
-                    ->sum(DB::raw('qty * price'));
-                $customer->update(['harga_sparepart' => $harga_sparepart]);
+                // --- LOGIKA BARU UNTUK MEMBUAT RINGKASAN SPAREPART ---
+
+                // 1. Muat ulang relasi yang baru saja dibuat agar datanya lengkap
+                $customer->load('customerSpareparts.sparepart');
+
+                // 2. Buat array berisi nama dan qty, contoh: ["Oli Mesin (x1)", "Baut Custom (x2)"]
+                $sparepartNames = $customer->customerSpareparts->map(function ($cs) {
+                    $name = $cs->sparepart ? $cs->sparepart->name : $cs->name;
+                    return "{$name} (x{$cs->qty})";
+                })->toArray();
+
+                // 3. Gabungkan array menjadi satu string, dipisahkan koma
+                $sparepartString = implode(', ', $sparepartNames);
+
+                // 4. Hitung ulang total harga sparepart
+                $totalHargaSparepart = $customer->customerSpareparts()->sum(DB::raw('qty * price'));
+
+                // 5. Update customer dengan total harga DAN string ringkasan sparepart
+                $customer->update([
+                    'harga_sparepart' => $totalHargaSparepart,
+                    'sparepart' => $sparepartString,
+                ]);
             }
 
             DB::commit();
 
-            // Muat ulang customer dengan relasi spareparts dan gerai
-            $customer->load('spareparts.sparepart', 'spareparts.gerai');
-            return response()->json(['success' => true, 'data' => $customer], 200);
+            $customer->load('customerSpareparts.sparepart', 'customerSpareparts.gerai');
+            return response()->json(['success' => true, 'message' => 'Data antrian berhasil diperbarui.', 'data' => $customer], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to update customer: ' . $e->getMessage(), ['request' => $request->all(), 'customer_id' => $customer->id]);
-            return response()->json(['success' => false, 'message' => 'Failed to update customer: ' . $e->getMessage()], 500);
+            Log::error('Gagal memperbarui antrian: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'customer_id' => $customer->id
+            ]);
+            return response()->json(['success' => false, 'message' => 'Gagal memperbarui antrian: ' . $e->getMessage()], 500);
         }
     }
 

@@ -30,6 +30,11 @@ class Customer extends Model
         });
     }
 
+    public function customerSpareparts()
+    {
+        return $this->hasMany(CustomerSparepart::class);
+    }
+
     public function gerai()
     {
         return $this->belongsTo(Gerai::class, 'gerai', 'name');
