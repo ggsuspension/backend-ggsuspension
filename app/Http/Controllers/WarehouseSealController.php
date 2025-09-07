@@ -22,6 +22,7 @@ class WarehouseSealController extends Controller
             'name' => 'required|string',
             'price' => 'required|integer',
             'qty' => 'required|integer|min:0',
+            'purchase_price' => 'required|integer|min:0',
             "category" => 'required|string',
             'motor_id' => 'sometimes',
         ]);
@@ -49,6 +50,7 @@ class WarehouseSealController extends Controller
             'name' => 'sometimes|string|max:255',
             'price' => 'sometimes|integer|min:0',
             'qty' => 'sometimes|integer|min:0',
+            'purchase_price' => 'sometimes|integer|min:0',
             "category" => 'sometimes|string',
             'motor_id' => 'sometimes',
         ]);

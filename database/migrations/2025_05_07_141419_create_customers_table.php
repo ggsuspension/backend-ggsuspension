@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("nama");
             $table->string("plat_motor");
             $table->string("noWA");
+            $table->string("klaim_garansi");
             $table->string("gerai")->nullable();
             $table->string("sudah_chat");
             $table->string("sumber_info");

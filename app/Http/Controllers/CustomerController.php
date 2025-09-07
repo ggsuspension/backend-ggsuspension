@@ -40,6 +40,7 @@ class CustomerController extends Controller
                 'sudah_chat' => $customer->sudah_chat,
                 'created_at' => $customer->created_at,
                 'keterangan' => $customer->keterangan,
+                'klaim_garansi' => $customer->klaim_garansi,
 
                 // --- KODE DENGAN PERBAIKAN ADA DI DALAM BAGIAN INI ---
                 'spareparts' => $customer->customerSpareparts->map(function ($cs) {
