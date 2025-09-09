@@ -42,16 +42,12 @@ class CustomerController extends Controller
                 'keterangan' => $customer->keterangan,
                 'klaim_garansi' => $customer->klaim_garansi,
 
-                // --- KODE DENGAN PERBAIKAN ADA DI DALAM BAGIAN INI ---
+                // --- PERBAIKAN LOGIKA PENGAMBILAN NAMA SPAREPART ---
                 'spareparts' => $customer->customerSpareparts->map(function ($cs) {
-
-                    // Cek jika ini sparepart terdaftar (relasi 'sparepart' tidak null)
-                    if ($cs->sparepart) {
-                        $name = $cs->sparepart->name;
-                    } else {
-                        // Jika tidak, ini adalah sparepart manual. Ambil nama dari kolom 'name' di tabel pivot.
-                        $name = $cs->name;
-                    }
+                    // Prioritaskan nama dari tabel pivot ($cs->name) karena ini yang paling akurat
+                    // (sesuai dengan yang dikirim frontend saat update).
+                    // Jika $cs->name kosong (misal data lama), baru gunakan nama dari relasi.
+                    $name = $cs->name ?: ($cs->sparepart ? $cs->sparepart->name : 'Sparepart tidak ditemukan');
 
                     return [
                         'customer_sparepart_id' => $cs->id,
@@ -59,7 +55,7 @@ class CustomerController extends Controller
                         'gerai_id' => $cs->gerai_id,
                         'qty' => $cs->qty,
                         'price' => $cs->price,
-                        'name' => $name, // Gunakan nama yang sudah ditentukan dengan aman
+                        'name' => $name,
                     ];
                 }),
             ];
@@ -99,8 +95,6 @@ class CustomerController extends Controller
             'spareparts.*.sparepart_id' => 'required_with:spareparts|exists:spareparts,id',
             'spareparts.*.gerai_id' => 'required_with:spareparts|exists:gerais,id',
             'spareparts.*.qty' => 'required_with:spareparts|integer|min:1',
-            // --- PERBAIKAN VALIDASI ---
-            // Izinkan 'keterangan' bernilai null jika dikirim, atau tidak ada sama sekali.
             'keterangan' => 'sometimes|nullable|string',
         ]);
 
@@ -122,12 +116,9 @@ class CustomerController extends Controller
                 }
             }
 
-            // --- PERBAIKAN LOGIKA PENYIMPANAN ---
-            // Siapkan data, pastikan 'keterangan' memiliki nilai default jika tidak ada di request.
             $customerData = $request->except('spareparts');
-            $customerData['keterangan'] = $request->input('keterangan', null); // Default ke null jika tidak ada
+            $customerData['keterangan'] = $request->input('keterangan', null);
 
-            // Buat customer dengan data yang sudah disiapkan
             $customer = Customer::create($customerData);
 
             if ($request->has('spareparts')) {
@@ -151,7 +142,7 @@ class CustomerController extends Controller
                 ->sum(DB::raw('qty * price'));
             $customer->update(['harga_sparepart' => $harga_sparepart]);
             DB::commit();
-            return response()->json(['success' => true, 'data' => $customer->load('spareparts.sparepart', 'spareparts.gerai')], 201);
+            return response()->json(['success' => true, 'data' => $customer->load('customerSpareparts.sparepart', 'customerSpareparts.gerai')], 201);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to create customer: ' . $e->getMessage(), ['request' => $request->all()]);
@@ -195,7 +186,7 @@ class CustomerController extends Controller
             'motor' => 'sometimes|nullable|string',
             'spareparts' => 'sometimes|array',
             'spareparts.*.sparepart_id' => 'nullable|integer|exists:spareparts,id',
-            'spareparts.*.name' => 'required_if:spareparts.*.sparepart_id,null|string|max:255',
+            'spareparts.*.name' => 'required|string|max:255', // Nama sekarang wajib ada di request
             'spareparts.*.gerai_id' => 'required_with:spareparts|exists:gerais,id',
             'spareparts.*.qty' => 'required_with:spareparts|integer|min:1',
             'spareparts.*.price' => 'required_with:spareparts|numeric',
@@ -215,45 +206,25 @@ class CustomerController extends Controller
 
                 // Loop dan buat ulang semua entri sparepart
                 foreach ($validated['spareparts'] as $sparepart) {
-                    $pivotData = [
+
+                    // --- PERBAIKAN LOGIKA PENYIMPANAN NAMA ---
+                    // Simpan semua data dari frontend, TERMASUK NAMA, ke dalam tabel pivot.
+                    CustomerSparepart::create([
                         'customer_id'  => $customer->id,
                         'gerai_id'     => $sparepart['gerai_id'],
                         'qty'          => $sparepart['qty'],
                         'price'        => $sparepart['price'],
                         'sparepart_id' => $sparepart['sparepart_id'],
-                    ];
-
-                    // Jika ini sparepart manual, simpan juga namanya di tabel pivot
-                    if (is_null($sparepart['sparepart_id'])) {
-                        $pivotData['name'] = $sparepart['name'];
-                    }
-
-                    CustomerSparepart::create($pivotData);
+                        'name'         => $sparepart['name'], // SELALU simpan nama dari request
+                    ]);
                 }
-
-                // --- LOGIKA BARU UNTUK MEMBUAT RINGKASAN SPAREPART ---
-
-                // 1. Muat ulang relasi yang baru saja dibuat agar datanya lengkap
-                $customer->load('customerSpareparts.sparepart');
-
-                // 2. Buat array berisi nama dan qty, contoh: ["Oli Mesin (x1)", "Baut Custom (x2)"]
-                $sparepartNames = $customer->customerSpareparts->map(function ($cs) {
-                    $name = $cs->sparepart ? $cs->sparepart->name : $cs->name;
-                    return "{$name} (x{$cs->qty})";
-                })->toArray();
-
-                // 3. Gabungkan array menjadi satu string, dipisahkan koma
-                $sparepartString = implode(', ', $sparepartNames);
-
-                // 4. Hitung ulang total harga sparepart
-                $totalHargaSparepart = $customer->customerSpareparts()->sum(DB::raw('qty * price'));
-
-                // 5. Update customer dengan total harga DAN string ringkasan sparepart
-                $customer->update([
-                    'harga_sparepart' => $totalHargaSparepart,
-                    'sparepart' => $sparepartString,
-                ]);
             }
+
+            // Hitung ulang total harga sparepart setelah perubahan
+            $totalHargaSparepart = $customer->customerSpareparts()->sum(DB::raw('qty * price'));
+            $customer->update([
+                'harga_sparepart' => $totalHargaSparepart,
+            ]);
 
             DB::commit();
 
