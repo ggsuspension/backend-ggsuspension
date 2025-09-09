@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string("category");
             $table->string("name");
             $table->integer("sparepart_id");
+            $table->integer('purchase_price');
             $table->integer('price');
             $table->integer('qty');
             $table->unsignedBigInteger('motor_id')->nullable();

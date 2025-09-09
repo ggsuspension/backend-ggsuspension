@@ -97,7 +97,6 @@ Route::resource('customer-profile', CustomerProfileController::class);
 Route::resource('customer', CustomerController::class);
 Route::resource('image', ImageController::class);
 Route::resource("customer-sparepart", CustomerSparepartController::class);
-Route::apiResource('history-sparepart', HistorySparepartController::class);
 
 // Authenticated Routes (JWT with auth:api)
 Route::middleware('auth:api')->group(function () {
