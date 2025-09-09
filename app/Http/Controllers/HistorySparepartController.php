@@ -12,8 +12,8 @@ class HistorySparepartController extends Controller
      */
     public function index()
     {
-        HistorySparepart::with()
-        return response()->json(['message' => 'Data berhasil diperoleh', 'data' => HistorySparepart::all()], 200);
+        // HistorySparepart::with();
+        // return response()->json(['message' => 'Data berhasil diperoleh', 'data' => HistorySparepart::all()], 200);
     }
 
     /**
