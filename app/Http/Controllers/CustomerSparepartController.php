@@ -27,6 +27,7 @@ class CustomerSparepartController extends Controller
                 'id' => $customerSparepart->id,
                 'gerai_id' => $customerSparepart->gerai_id,
                 'gerai_name' => $customerSparepart->gerai->name,
+                'layanan' => $customerSparepart->customer->layanan,
                 'status' => $customerSparepart->customer->status,
                 'sparepart_price' => $sparepart_price,
                 'sparepart_name' => $sparepart_name,
