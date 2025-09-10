@@ -28,15 +28,12 @@ class ImageController extends Controller
         if ($request->hasFile('image')) {
             $imageFile = $request->file('image');
             $filename = time() . '_' . $imageFile->getClientOriginalName();
-            // Simpan file ke folder storage/app/public/images
-            // (pastikan Anda menjalankan php artisan storage:link)
             $path = $imageFile->storeAs('images', $filename, 'public');
             $image = new Image();
             $image->title = $request->title ?? $imageFile->getClientOriginalName();
             $image->filename = $filename;
             $image->path = $path;
             $image->save();
-
         }
 
         return back()->with('error', 'Gagal mengunggah gambar!');

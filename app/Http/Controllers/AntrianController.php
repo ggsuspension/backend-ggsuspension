@@ -177,15 +177,6 @@ class AntrianController extends Controller
             }
             $order->update($request->all());
 
-            // if ($order->gerai_id !== ($user->gerai_id ?? JWTAuth::parseToken()->getClaim('geraiId'))) {
-            //     Log::warning('Unauthorized: Order does not belong to user\'s gerai', [
-            //         'user_id' => $user->id,
-            //         'order_id' => $id,
-            //         'gerai_id' => $order->gerai_id,
-            //     ]);
-            //     return response()->json(['error' => 'Order tidak sesuai dengan gerai pengguna'], 403);
-            // }
-
             return response()->json([
                 'message' => 'Order berhasil diperbarui',
             ]);
@@ -215,82 +206,6 @@ class AntrianController extends Controller
         }
     }
 
-    // public function finishOrder($id): JsonResponse
-    // {
-    //     try {
-    //         $user = auth('api')->user();
-    //         if (!$user) {
-    //             Log::warning('Unauthorized access attempt to finish order ID: ' . $id);
-    //             return response()->json(['error' => 'Unauthorized'], 401);
-    //         }
-
-    //         $order = Order::withoutGlobalScopes()->find($id);
-    //         if (!$order) {
-    //             return response()->json(['error' => 'Order tidak ditemukan'], 404);
-    //         }
-
-    //         if ($order->gerai_id !== ($user->gerai_id ?? JWTAuth::parseToken()->getClaim('geraiId'))) {
-    //             Log::warning('Unauthorized: Order does not belong to user\'s gerai', [
-    //                 'user_id' => $user->id,
-    //                 'order_id' => $id,
-    //                 'gerai_id' => $order->gerai_id,
-    //             ]);
-    //             return response()->json(['error' => 'Order tidak sesuai dengan gerai pengguna'], 403);
-    //         }
-
-    //         if ($order->status !== OrderStatus::PROGRESS) {
-    //             Log::warning('Cannot finish order: Invalid status', [
-    //                 'order_id' => $id,
-    //                 'current_status' => $order->status->value,
-    //             ]);
-    //             return response()->json(['error' => 'Order harus dalam status PROGRESS untuk diselesaikan'], 422);
-    //         }
-
-    //         DB::beginTransaction();
-
-    //         $order->status = OrderStatus::FINISHED;
-    //         $order->save();
-
-    //         Log::info('Order finished successfully', [
-    //             'order_id' => $order->id,
-    //             'status' => $order->status->value,
-    //         ]);
-
-    //         // Validasi order setelah perubahan
-    //         if (!$this->validateOrder($order)) {
-    //             Log::warning('Validasi gagal untuk order ID: ' . $order->id, [
-    //                 'waktu' => $order->waktu,
-    //                 'gerai_id' => $order->gerai_id,
-    //                 'motor_id' => $order->motor_id,
-    //                 'motor_part_id' => $order->motor_part_id,
-    //                 'status' => $order->status,
-    //                 'plat' => $order->plat,
-    //             ]);
-    //             DB::rollBack();
-    //             return response()->json(['error' => 'Data order tidak lengkap'], 422);
-    //         }
-
-    //         DB::commit();
-
-    //         $order->load([
-    //             'gerai',
-    //             'motor',
-    //             'motorPart.subcategory.category',
-    //             'seals',
-    //             'customer',
-    //         ]);
-
-    //         return response()->json([
-    //             'message' => 'Order berhasil diselesaikan',
-    //             'order' => $this->formatOrderResponse($order),
-    //         ], 200);
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         Log::error('Gagal menyelesaikan order: ' . $e->getMessage(), ['exception' => $e]);
-    //         return response()->json(['error' => 'Gagal menyelesaikan order: ' . $e->getMessage()], 500);
-    //     }
-    // }
-
     public function cancelOrder($id): JsonResponse
     {
         try {
@@ -315,7 +230,7 @@ class AntrianController extends Controller
             !is_null($order->motor_id) &&
             !is_null($order->motor_part_id) &&
             !is_null($order->status) &&
-            !is_null($order->plat); // Pastikan plat ada untuk relasi customer
+            !is_null($order->plat);
 
         Log::debug('Validasi order ID: ' . $order->id, [
             'waktu' => $order->waktu,

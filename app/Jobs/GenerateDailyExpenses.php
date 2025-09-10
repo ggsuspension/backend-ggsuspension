@@ -47,11 +47,9 @@ class GenerateDailyExpenses implements ShouldQueue
                     foreach ($gerais as $gerai) {
                         $dailyAmount = 0;
 
-                        // Cek biaya spesifik di expense_category_gerai
                         $pivot = $category->gerais()->where('gerai_id', $gerai->id)->first();
 
                         if ($pivot && ($pivot->pivot->daily_cost || $pivot->pivot->monthly_cost)) {
-                            // Gunakan biaya dari pivot
                             if ($pivot->pivot->daily_cost) {
                                 $dailyAmount += $pivot->pivot->daily_cost;
                             }
@@ -59,7 +57,6 @@ class GenerateDailyExpenses implements ShouldQueue
                                 $dailyAmount += $pivot->pivot->monthly_cost / $daysInMonth;
                             }
                         } else {
-                            // Fallback ke biaya di ExpenseCategory
                             if ($category->daily_cost) {
                                 $dailyAmount += $category->daily_cost;
                             }
@@ -82,7 +79,6 @@ class GenerateDailyExpenses implements ShouldQueue
                                 'date' => $this->date->toDateString(),
                             ]);
 
-                            // Dispatch job untuk menghitung ulang daily_net_revenues
                             CalculateDailyNetRevenue::dispatchSync($gerai->id, $this->date->toDateString());
                         }
                     }

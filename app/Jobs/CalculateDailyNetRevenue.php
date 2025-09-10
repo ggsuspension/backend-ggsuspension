@@ -45,7 +45,6 @@ class CalculateDailyNetRevenue implements ShouldQueue
                 return;
             }
 
-            // Hitung service_total dan sparepart_total dari tabel customers
             $revenueData = Customer::where('gerai', $gerai->name)
                 ->where('status', 'FINISH')
                 ->whereBetween('customers.updated_at', [$startOfDay, $endOfDay])
@@ -55,7 +54,6 @@ class CalculateDailyNetRevenue implements ShouldQueue
                 ])
                 ->first();
 
-            // Jika harga_sparepart kosong, hitung dari customer_spareparts
             $sparepartTotalFromParts = Customer::where('gerai', $gerai->name)
                 ->where('status', 'FINISH')
                 ->whereBetween('customers.updated_at', [$startOfDay, $endOfDay])

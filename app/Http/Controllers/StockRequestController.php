@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\RequestStatus;
-use App\Models\HistorySparepart;
 use App\Models\Seal;
-use App\Models\Sparepart;
 use App\Models\StockRequest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -43,7 +41,7 @@ class StockRequestController extends Controller
         try {
             $dataToInsert = [];
             $now = Carbon::now();
-            $sparepartIds = []; // Untuk menampung ID sparepart yang direquest
+            $sparepartIds = [];
 
             foreach ($dataRequest as $index => $item) {
                 $validator = Validator::make($item, [
@@ -75,7 +73,6 @@ class StockRequestController extends Controller
 
             DB::commit();
 
-            // Ambil data yang baru saja dimasukkan untuk dikirim kembali ke frontend
             $newRequests = StockRequest::with(['gerai', 'warehouseSeal.motor'])
                 ->where('created_at', '>=', $now)
                 ->where('gerai_id', $dataRequest[0]['gerai_id'])
@@ -84,7 +81,7 @@ class StockRequestController extends Controller
 
             return response()->json([
                 'message' => 'Permintaan stok berhasil dibuat.',
-                'data' => $newRequests // <-- Kirim data baru di sini
+                'data' => $newRequests
             ], 201);
         } catch (ValidationException $e) {
             DB::rollBack();
@@ -113,7 +110,6 @@ class StockRequestController extends Controller
         try {
             $stockRequest = StockRequest::findOrFail($stockRequestId);
 
-            // Hanya bisa edit jika status PENDING
             if ($stockRequest->status !== RequestStatus::PENDING) {
                 return response()->json([
                     'message' => 'Hanya permintaan dengan status PENDING yang dapat diubah.'
@@ -138,26 +134,21 @@ class StockRequestController extends Controller
         try {
             $stockRequest = StockRequest::with('warehouseSeal')->findOrFail($stockRequestId);
 
-            // Validasi 1: Status harus PENDING
             if ($stockRequest->status !== RequestStatus::PENDING) {
                 return response()->json(['message' => 'Permintaan sudah diproses atau ditolak.'], 400);
             }
 
-            // Validasi 2: Kuantitas harus sudah diisi
             if (is_null($stockRequest->qty_requested) || $stockRequest->qty_requested <= 0) {
                 return response()->json(['message' => 'Kuantitas belum diisi. Harap edit permintaan terlebih dahulu.'], 400);
             }
 
-            // Validasi 3: Cek stok di gudang
             $warehouseSeal = $stockRequest->warehouseSeal;
             if ($warehouseSeal->qty < $stockRequest->qty_requested) {
                 return response()->json(['message' => 'Stok di gudang tidak mencukupi.'], 400);
             }
 
-            // Kurangi stok gudang
             $warehouseSeal->decrement('qty', $stockRequest->qty_requested);
 
-            // Tambah atau update stok di gerai (tabel seals)
             Seal::updateOrCreate(
                 [
                     'gerai_id' => $stockRequest->gerai_id,
@@ -168,11 +159,11 @@ class StockRequestController extends Controller
                     'name' => $warehouseSeal->name,
                     'motor_id' => $warehouseSeal->motor_id,
                     'price' => $warehouseSeal->price,
+                    'purchase_price' => $warehouseSeal->purchase_price,
                     'qty' => DB::raw('qty + ' . $stockRequest->qty_requested),
                 ]
             );
 
-            // Update status permintaan
             $stockRequest->status = RequestStatus::APPROVED;
             $stockRequest->approved_at = now();
             $stockRequest->save();

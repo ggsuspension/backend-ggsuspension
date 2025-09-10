@@ -222,7 +222,7 @@ class DailyNetRevenueController extends Controller
                 'request_ip' => $request->ip(),
             ]);
 
-            Cache::forget($cacheKey); // Hapus cache untuk data terbaru
+            Cache::forget($cacheKey);
 
             $data = DailyNetRevenue::query()
                 ->whereBetween('date', [$startDate, $endDate])
@@ -288,13 +288,11 @@ class DailyNetRevenueController extends Controller
                 'gerai_id' => $geraiId,
             ]);
 
-            // Coba ambil data dari tabel
             $revenue = DailyNetRevenue::where('date', $date->toDateString())
                 ->where('gerai_id', $geraiId)
                 ->with('gerai')
                 ->first();
 
-            // Jika data tidak ada, hitung ulang
             if (!$revenue) {
                 $gerai = Gerai::find($geraiId);
                 if (!$gerai) {
@@ -304,14 +302,12 @@ class DailyNetRevenueController extends Controller
 
                 $endOfDay = $date->copy()->endOfDay();
 
-                // Hitung total pendapatan dari customers
                 $totalRevenue = Customer::where('gerai', $gerai->name)
                     ->where('status', 'FINISH')
                     ->whereBetween('updated_at', [$date, $endOfDay])
                     ->select(DB::raw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total'))
                     ->value('total') ?? 0;
 
-                // Hitung total pengeluaran dari expenses
                 $totalExpenses = Expense::where('gerai_id', $geraiId)
                     ->whereBetween('date', [$date, $endOfDay])
                     ->sum('amount') ?? 0;
@@ -321,10 +317,8 @@ class DailyNetRevenueController extends Controller
                     'total_expenses' => $totalExpenses,
                 ]);
 
-                // Hitung pendapatan bersih
                 $netRevenue = $totalRevenue - $totalExpenses;
 
-                // Simpan atau perbarui data
                 $revenue = DailyNetRevenue::updateOrCreate(
                     [
                         'gerai_id' => $geraiId,
@@ -338,7 +332,6 @@ class DailyNetRevenueController extends Controller
                 );
             }
 
-            // Format response
             $response = [
                 'gerai_id' => $revenue->gerai_id,
                 'gerai' => $revenue->gerai ? $revenue->gerai->name : 'Unknown',
@@ -373,9 +366,8 @@ class DailyNetRevenueController extends Controller
             $startDate = $validated['startDate'];
             $endDate = $validated['endDate'];
 
-            // Konversi YY-MM-DD ke YYYY-MM-DD
             if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $startDate)) {
-                $startDate = '20' . $startDate; // Asumsikan abad 21
+                $startDate = '20' . $startDate;
             }
             if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $endDate)) {
                 $endDate = '20' . $endDate;
@@ -419,7 +411,6 @@ class DailyNetRevenueController extends Controller
             $endDate = $validated['endDate'];
             $geraiId = $validated['geraiId'];
 
-            // Konversi YY-MM-DD ke YYYY-MM-DD jika perlu
             if (preg_match('/^\d{2}-\d{2}-\d{2}$/', $startDate)) {
                 $startDate = '20' . $startDate;
             }
@@ -594,7 +585,7 @@ class DailyNetRevenueController extends Controller
         $validated = $request->validate([
             'gerai_id' => 'required|exists:gerais,id',
             'period' => 'required|in:daily,monthly,yearly,all',
-            'date' => 'required_if:period,daily,monthly,yearly|date', // Wajib untuk daily, monthly, yearly
+            'date' => 'required_if:period,daily,monthly,yearly|date',
         ]);
 
         try {
@@ -610,7 +601,6 @@ class DailyNetRevenueController extends Controller
                 ->where('status', 'FINISH')
                 ->selectRaw('SUM(COALESCE(harga_service, 0) + COALESCE(harga_sparepart, 0)) as total_revenue');
 
-            // Tentukan rentang waktu berdasarkan periode
             if ($period === 'daily') {
                 $date = Carbon::parse($validated['date'])->startOfDay();
                 $endOfDay = $date->copy()->endOfDay();
@@ -626,12 +616,10 @@ class DailyNetRevenueController extends Controller
                 $endOfYear = $date->copy()->endOfYear();
                 $query->whereBetween('updated_at', [$startOfYear, $endOfYear]);
             } elseif ($period === 'all') {
-                // Tidak ada filter tanggal untuk keseluruhan
             }
 
             $totalRevenue = $query->value('total_revenue') ?? 0;
 
-            // Ambil total pengeluaran (expenses) berdasarkan periode
             $expenseQuery = Expense::where('gerai_id', $geraiId);
             if ($period === 'daily') {
                 $expenseQuery->whereBetween('date', [$date, $endOfDay]);
@@ -640,15 +628,12 @@ class DailyNetRevenueController extends Controller
             } elseif ($period === 'yearly') {
                 $expenseQuery->whereBetween('date', [$startOfYear, $endOfYear]);
             } elseif ($period === 'all') {
-                // Tidak ada filter tanggal untuk keseluruhan
             }
 
             $totalExpenses = $expenseQuery->sum('amount') ?? 0;
 
-            // Hitung net revenue
             $netRevenue = $totalRevenue - $totalExpenses;
 
-            // Simpan atau perbarui DailyNetRevenue untuk periode harian
             if ($period === 'daily') {
                 DailyNetRevenue::updateOrCreate(
                     [
@@ -663,7 +648,6 @@ class DailyNetRevenueController extends Controller
                 );
             }
 
-            // Format response
             $response = [
                 'gerai' => $gerai->name,
                 'period' => $period,

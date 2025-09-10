@@ -17,11 +17,11 @@ class MotorPartResource extends JsonResource
                 'name' => $this->subcategory->name,
                 'category' => $this->subcategory->category->name,
             ],
-            'motors' => $this->motors->pluck('name'), // pastikan kolom nama motor adalah 'name'
+            'motors' => $this->motors->pluck('name'),
             'orders' => $this->orders->map(function ($order) {
                 return [
                     'id' => $order->id,
-                    'nama' => $order->nama, // pastikan kolom nama di order adalah 'nama'
+                    'nama' => $order->nama,
                 ];
             }),
         ];
