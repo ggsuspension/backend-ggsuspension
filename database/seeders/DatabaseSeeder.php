@@ -1149,12 +1149,13 @@ class DatabaseSeeder extends Seeder
             ],
         ]);
 
-        Seal::insert([
+       
+ Seal::insert([
             // SEAL DEPAN Category
             [
                 "name" => "BK6 / R15",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 60000,
                 "purchase_price" => 18000,
                 "motor_id" => null,
@@ -1164,7 +1165,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Dtracker / KLX",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 60000,
                 "purchase_price" => 7500,
                 "motor_id" => null,
@@ -1174,7 +1175,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "3HB",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 4,
                 "price" => 40000,
                 "purchase_price" => 13000,
                 "motor_id" => null,
@@ -1184,7 +1185,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "3CI / 5BP (33-34-10,5)",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 22,
                 "price" => 50000,
                 "purchase_price" => 13000,
                 "motor_id" => null,
@@ -1194,7 +1195,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "GN5",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 20,
                 "price" => 30000,
                 "purchase_price" => 13000,
                 "motor_id" => null,
@@ -1204,7 +1205,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "KC5",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 2,
                 "price" => 50000,
                 "purchase_price" => 18000,
                 "motor_id" => null,
@@ -1214,7 +1215,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "K84 / KWL",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 6,
                 "price" => 62500,
                 "purchase_price" => 18000,
                 "motor_id" => null,
@@ -1224,7 +1225,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "KTC USD",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 12,
                 "price" => 50000,
                 "purchase_price" => 50000,
                 "motor_id" => null,
@@ -1234,7 +1235,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Ninja 250 / K84",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 67500,
                 "purchase_price" => 18000,
                 "motor_id" => null,
@@ -1244,7 +1245,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Ninja 2 Tak",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 20000,
                 "motor_id" => null,
@@ -1254,7 +1255,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "VESMET (14-34-14)",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 9,
                 "price" => 30000,
                 "purchase_price" => 13000,
                 "motor_id" => null,
@@ -1264,7 +1265,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "45P",
                 "category" => "SEAL DEPAN",
-                "qty" => 100,
+                "qty" => 10,
                 "price" => 62500,
                 "purchase_price" => 20000,
                 "motor_id" => null,
@@ -1276,7 +1277,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal ADV",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 6,
                 "price" => 40000,
                 "purchase_price" => 4000,
                 "motor_id" => null,
@@ -1286,7 +1287,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal Byson 14 41",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 18000,
                 "motor_id" => null,
@@ -1296,7 +1297,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 10 30 12",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 3,
                 "price" => 40000,
                 "purchase_price" => 8500,
                 "motor_id" => null,
@@ -1306,7 +1307,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 10 28 7",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 40000,
                 "purchase_price" => 10000,
                 "motor_id" => null,
@@ -1316,7 +1317,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 10 28 13,4",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 40000,
                 "purchase_price" => 3800,
                 "motor_id" => null,
@@ -1326,7 +1327,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12 24 5",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 1,
                 "price" => 60000,
                 "purchase_price" => 5000,
                 "motor_id" => null,
@@ -1336,7 +1337,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12 26 7",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 40000,
                 "purchase_price" => 6000,
                 "motor_id" => null,
@@ -1346,7 +1347,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12 37 12",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 8000,
                 "motor_id" => null,
@@ -1356,7 +1357,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12,5 36 12",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 2,
                 "price" => 50000,
                 "purchase_price" => 6500,
                 "motor_id" => null,
@@ -1366,7 +1367,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12,5 32 15",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 6,
                 "price" => 50000,
                 "purchase_price" => 8250,
                 "motor_id" => null,
@@ -1376,7 +1377,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12,5 24 5",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 60000,
                 "purchase_price" => 9000,
                 "motor_id" => null,
@@ -1386,7 +1387,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12,5 35 12",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 8000,
                 "motor_id" => null,
@@ -1396,7 +1397,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12.5 37 12",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 6800,
                 "motor_id" => null,
@@ -1406,7 +1407,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 12.20.5",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 40000,
                 "purchase_price" => 4500,
                 "motor_id" => null,
@@ -1416,7 +1417,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal LBH 12 20",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 5,
                 "price" => 40000,
                 "purchase_price" => 6000,
                 "motor_id" => null,
@@ -1426,7 +1427,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal LBH 14",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 3,
                 "price" => 40000,
                 "purchase_price" => 4500,
                 "motor_id" => null,
@@ -1436,7 +1437,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal NMAX",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 40000,
                 "purchase_price" => 4000,
                 "motor_id" => null,
@@ -1446,7 +1447,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal Ninja 12 27 5",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 1,
                 "price" => 60000,
                 "purchase_price" => 9000,
                 "motor_id" => null,
@@ -1456,7 +1457,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal OHLINS",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 80000,
                 "purchase_price" => 30000,
                 "motor_id" => null,
@@ -1466,7 +1467,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 14 22 5",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 2,
                 "price" => 40000,
                 "purchase_price" => 4500,
                 "motor_id" => null,
@@ -1476,7 +1477,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 14 24 NOK",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 6000,
                 "motor_id" => null,
@@ -1486,7 +1487,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 14 36 12",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 4,
                 "price" => 50000,
                 "purchase_price" => 11000,
                 "motor_id" => null,
@@ -1496,7 +1497,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 14 27 7",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 10000,
                 "motor_id" => null,
@@ -1506,7 +1507,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal 14 30 5",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 60000,
                 "purchase_price" => 20000,
                 "motor_id" => null,
@@ -1516,7 +1517,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal Vesmet 10 28 13,4",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 65000,
                 "purchase_price" => 3800,
                 "motor_id" => null,
@@ -1526,7 +1527,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal YSS 12 31,5 15",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 8250,
                 "motor_id" => null,
@@ -1536,7 +1537,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Seal KYB Elite 15 28 10",
                 "category" => "SEAL BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 60000,
                 "purchase_price" => 28000,
                 "motor_id" => null,
@@ -1548,7 +1549,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "AS Vesmet",
                 "category" => "AS DEPAN",
-                "qty" => 100,
+                "qty" => 4,
                 "price" => 80000,
                 "purchase_price" => 25000,
                 "motor_id" => null,
@@ -1560,7 +1561,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "AS NMAX",
                 "category" => "AS BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 50000,
                 "purchase_price" => 7500,
                 "motor_id" => null,
@@ -1570,7 +1571,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "AS YSS",
                 "category" => "AS BELAKANG",
-                "qty" => 100,
+                "qty" => 9,
                 "price" => 80000,
                 "purchase_price" => 17500,
                 "motor_id" => null,
@@ -1580,7 +1581,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "AS ADV",
                 "category" => "AS BELAKANG",
-                "qty" => 100,
+                "qty" => 9,
                 "price" => 50000,
                 "purchase_price" => 8000,
                 "motor_id" => null,
@@ -1590,7 +1591,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "AS SHOCK STANDAR VARIO",
                 "category" => "AS BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 30000,
                 "purchase_price" => 8000,
                 "motor_id" => null,
@@ -1600,7 +1601,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "AS KTC EXTREME BERONGGA",
                 "category" => "AS BELAKANG",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 200000,
                 "purchase_price" => 160000,
                 "motor_id" => null,
@@ -1612,7 +1613,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "HONDA",
                 "category" => "PER DOWNSIZE",
-                "qty" => 100,
+                "qty" => 17,
                 "price" => 15000,
                 "purchase_price" => 7000,
                 "motor_id" => null,
@@ -1622,7 +1623,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "NMAX / PCX",
                 "category" => "PER DOWNSIZE",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 25000,
                 "purchase_price" => 15000,
                 "motor_id" => null,
@@ -1632,7 +1633,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "X-MAX",
                 "category" => "PER DOWNSIZE",
-                "qty" => 100,
+                "qty" => 16,
                 "price" => 25000,
                 "purchase_price" => 15000,
                 "motor_id" => null,
@@ -1642,7 +1643,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "YAMAHA",
                 "category" => "PER DOWNSIZE",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 15000,
                 "purchase_price" => 7000,
                 "motor_id" => null,
@@ -1654,7 +1655,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Oli 200ml",
                 "category" => "OLI TURALIT",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 10000,
                 "purchase_price" => 6700,
                 "motor_id" => null,
@@ -1664,7 +1665,7 @@ class DatabaseSeeder extends Seeder
             [
                 "name" => "Oli 500ml",
                 "category" => "OLI TURALIT",
-                "qty" => 100,
+                "qty" => 0,
                 "price" => 25000,
                 "purchase_price" => 16700,
                 "motor_id" => null,
@@ -1672,6 +1673,509 @@ class DatabaseSeeder extends Seeder
                 "sparepart_id" => 51
             ],
         ]);
-     
+
+
+        // Update quantity berdasarkan scan foto inventory
+// Seal::insert([
+//     // SEAL DEPAN Category
+//     [
+//         "name" => "BK6 / R15",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 60000,
+//         "purchase_price" => 18000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 1
+//     ],
+//     [
+//         "name" => "Dtracker / KLX",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 60000,
+//         "purchase_price" => 7500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 2
+//     ],
+//     [
+//         "name" => "3HB",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 2, // Sesuai foto
+//         "price" => 40000,
+//         "purchase_price" => 13000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 3
+//     ],
+//     [
+//         "name" => "3CI / 5BP (33-34-10,5)",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 11, // Sesuai foto (5BP)
+//         "price" => 50000,
+//         "purchase_price" => 13000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 4
+//     ],
+//     [
+//         "name" => "GN5",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 30000,
+//         "purchase_price" => 13000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 5
+//     ],
+//     [
+//         "name" => "KC5",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 1, // Sesuai foto
+//         "price" => 50000,
+//         "purchase_price" => 18000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 6
+//     ],
+//     [
+//         "name" => "K84 / KWL",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 3, // Sesuai foto (K84)
+//         "price" => 62500,
+//         "purchase_price" => 18000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 7
+//     ],
+//     [
+//         "name" => "KTC USD",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 6, // Sesuai foto (USD)
+//         "price" => 50000,
+//         "purchase_price" => 50000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 8
+//     ],
+//     [
+//         "name" => "Ninja 250 / K84",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 67500,
+//         "purchase_price" => 18000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 9
+//     ],
+//     [
+//         "name" => "Ninja 2 Tak",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 20000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 10
+//     ],
+//     [
+//         "name" => "VESMET (14-34-14)",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 30000,
+//         "purchase_price" => 13000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 11
+//     ],
+//     [
+//         "name" => "45P",
+//         "category" => "SEAL DEPAN",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 62500,
+//         "purchase_price" => 20000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 12
+//     ],
+
+//     // SEAL BELAKANG Category
+//     [
+//         "name" => "Seal ADV",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 6, // Sesuai foto (ADV BLG5)
+//         "price" => 40000,
+//         "purchase_price" => 4000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 13
+//     ],
+//     [
+//         "name" => "Seal Byson 14 41",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 18000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 14
+//     ],
+//     [
+//         "name" => "Seal 10 30 12",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 3, // Sesuai foto (10-30-10)
+//         "price" => 40000,
+//         "purchase_price" => 8500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 15
+//     ],
+//     [
+//         "name" => "Seal 10 28 7",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 40000,
+//         "purchase_price" => 10000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 16
+//     ],
+//     [
+//         "name" => "Seal 10 28 13,4",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 40000,
+//         "purchase_price" => 3800,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 17
+//     ],
+//     [
+//         "name" => "Seal 12 24 5",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 1, // Sesuai foto (12-24-5 COE)
+//         "price" => 60000,
+//         "purchase_price" => 5000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 18
+//     ],
+//     [
+//         "name" => "Seal 12 26 7",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 40000,
+//         "purchase_price" => 6000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 19
+//     ],
+//     [
+//         "name" => "Seal 12 37 12",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 8000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 20
+//     ],
+//     [
+//         "name" => "Seal 12,5 36 12",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 1, // Sesuai foto (12.5-36)
+//         "price" => 50000,
+//         "purchase_price" => 6500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 21
+//     ],
+//     [
+//         "name" => "Seal 12,5 32 15",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 8, // Sesuai foto (12.5-32)
+//         "price" => 50000,
+//         "purchase_price" => 8250,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 22
+//     ],
+//     [
+//         "name" => "Seal 12,5 24 5",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 60000,
+//         "purchase_price" => 9000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 23
+//     ],
+//     [
+//         "name" => "Seal 12,5 35 12",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 8000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 24
+//     ],
+//     [
+//         "name" => "Seal 12.5 37 12",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 6800,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 25
+//     ],
+//     [
+//         "name" => "Seal 12.20.5",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 40000,
+//         "purchase_price" => 4500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 26
+//     ],
+//     [
+//         "name" => "Seal LBH 12 20",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 5, // Sesuai foto (LBH 12)
+//         "price" => 40000,
+//         "purchase_price" => 6000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 27
+//     ],
+//     [
+//         "name" => "Seal LBH 14",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 3, // Sesuai foto
+//         "price" => 40000,
+//         "purchase_price" => 4500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 28
+//     ],
+//     [
+//         "name" => "Seal NMAX",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 40000,
+//         "purchase_price" => 4000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 29
+//     ],
+//     [
+//         "name" => "Seal Ninja 12 27 5",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 1, // Sesuai foto (12-27-5)
+//         "price" => 60000,
+//         "purchase_price" => 9000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 30
+//     ],
+//     [
+//         "name" => "Seal OHLINS",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 80000,
+//         "purchase_price" => 30000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 31
+//     ],
+//     [
+//         "name" => "Seal 14 22 5",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 2, // Sesuai foto (14-22 USH)
+//         "price" => 40000,
+//         "purchase_price" => 4500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 32
+//     ],
+//     [
+//         "name" => "Seal 14 24 NOK",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 6000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 33
+//     ],
+//     [
+//         "name" => "Seal 14 36 12",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 4, // Sesuai foto (14-36)
+//         "price" => 50000,
+//         "purchase_price" => 11000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 34
+//     ],
+//     [
+//         "name" => "Seal 14 27 7",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 10000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 35
+//     ],
+//     [
+//         "name" => "Seal 14 30 5",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 60000,
+//         "purchase_price" => 20000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 36
+//     ],
+//     [
+//         "name" => "Seal Vesmet 10 28 13,4",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 9, // Sesuai foto (14-34 VESPA)
+//         "price" => 65000,
+//         "purchase_price" => 3800,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 37
+//     ],
+//     [
+//         "name" => "Seal YSS 12 31,5 15",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 8250,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 38
+//     ],
+//     [
+//         "name" => "Seal KYB Elite 15 28 10",
+//         "category" => "SEAL BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 60000,
+//         "purchase_price" => 28000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 39
+//     ],
+
+//     // AS DEPAN Category
+//     [
+//         "name" => "AS Vesmet",
+//         "category" => "AS DEPAN",
+//         "qty" => 4, // Sesuai foto (As VESPA)
+//         "price" => 80000,
+//         "purchase_price" => 25000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 40
+//     ],
+
+//     // AS BELAKANG Category
+//     [
+//         "name" => "AS NMAX",
+//         "category" => "AS BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 50000,
+//         "purchase_price" => 7500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 41
+//     ],
+//     [
+//         "name" => "AS YSS",
+//         "category" => "AS BELAKANG",
+//         "qty" => 9, // Sesuai foto (USS & SETUES)
+//         "price" => 80000,
+//         "purchase_price" => 17500,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 42
+//     ],
+//     [
+//         "name" => "AS ADV",
+//         "category" => "AS BELAKANG",
+//         "qty" => 9, // Sesuai foto
+//         "price" => 50000,
+//         "purchase_price" => 8000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 43
+//     ],
+//     [
+//         "name" => "AS SHOCK STANDAR VARIO",
+//         "category" => "AS BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 30000,
+//         "purchase_price" => 8000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 44
+//     ],
+//     [
+//         "name" => "AS KTC EXTREME BERONGGA",
+//         "category" => "AS BELAKANG",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 200000,
+//         "purchase_price" => 160000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 45
+//     ],
+
+//     // PER DOWNSIZE Category
+//     [
+//         "name" => "HONDA",
+//         "category" => "PER DOWNSIZE",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 15000,
+//         "purchase_price" => 7000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 46
+//     ],
+//     [
+//         "name" => "NMAX / PCX",
+//         "category" => "PER DOWNSIZE",
+//         "qty" => 0, // Tidak ada di scan  
+//         "price" => 25000,
+//         "purchase_price" => 15000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 47
+//     ],
+//     [
+//         "name" => "X-MAX",
+//         "category" => "PER DOWNSIZE",
+//         "qty" => 16, // Sesuai foto (XMAX)
+//         "price" => 25000,
+//         "purchase_price" => 15000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 48
+//     ],
+//     [
+//         "name" => "YAMAHA",
+//         "category" => "PER DOWNSIZE",
+//         "qty" => 0, // Tidak ada di scan
+//         "price" => 15000,
+//         "purchase_price" => 7000,
+//         "motor_id" => null,
+//         "gerai_id" => 1,
+//         "sparepart_id" => 49
+//     ],]
+//     );
     }
 }
