@@ -725,7 +725,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Tangerang',
             'location' => 'Tangerang',
         ]);
-        User::insert([["username" => "adminsosmedggsuspension", "password" => Hash::make("adminsosmedggsuspension123"), "gerai_id" =>null, "role" => "CS"], ["username" => "geraipusatggsuspension", "password" => Hash::make("geraipusatggsuspension123"), "role" => "ADMIN", "gerai_id" => 1], ["username" => "geraijaktimggsuspension", "password" => Hash::make("geraijaktimggsuspension123"), "role" => "ADMIN", "gerai_id" => 5],  ["username" => "purchasingggsuspension", "password" => Hash::make("purchasinggggsuspension123"), "role" => "GUDANG", "gerai_id" => null], ["username" => "ceo", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "CEO"]]);
+        User::insert([["username" => "adminsosmedggsuspension", "password" => Hash::make("adminsosmedggsuspension123"), "gerai_id" => null, "role" => "CS"], ["username" => "geraipusatggsuspension", "password" => Hash::make("geraipusatggsuspension123"), "role" => "ADMIN", "gerai_id" => 1], ["username" => "geraijaktimggsuspension", "password" => Hash::make("geraijaktimggsuspension123"), "role" => "ADMIN", "gerai_id" => 5],  ["username" => "purchasingggsuspension", "password" => Hash::make("purchasinggggsuspension123"), "role" => "GUDANG", "gerai_id" => null], ["username" => "ceo", "password" => Hash::make("12345"), "gerai_id" => null, "role" => "CEO"]]);
 
         Sparepart::insert([
             // SEAL DEPAN Category (1 SET - price dibagi 2)
