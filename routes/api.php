@@ -100,7 +100,6 @@ Route::resource("customer-sparepart", CustomerSparepartController::class);
 
 // Authenticated Routes (JWT with auth:api)
 Route::middleware('auth:api')->group(function () {
-    // Get authenticated user
     Route::get('/user', function (Request $request) {
         return response()->json($request->user());
     });

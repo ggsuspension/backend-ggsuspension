@@ -6,7 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
@@ -14,7 +13,7 @@ class CheckRole
 
     {
         $user = Auth::guard('api')->user();
-        Log::info('User role: ', ['role' => $user->role]);  // Perbaiki untuk mengakses 'role' langsung
+        Log::info('User role: ', ['role' => $user->role]);
 
         if (!$user) {
             return response()->json(['error' => 'Unauthorized: No user'], 401);

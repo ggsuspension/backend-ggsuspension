@@ -17,10 +17,8 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        // Ambil semua customer dengan relasi yang dibutuhkan
         $customers = Customer::with(['customerSpareparts.sparepart', 'customerSpareparts.gerai'])->get();
 
-        // Transformasi data untuk frontend
         $data = $customers->map(function ($customer) {
             return [
                 'id' => $customer->id,
@@ -42,11 +40,7 @@ class CustomerController extends Controller
                 'keterangan' => $customer->keterangan,
                 'klaim_garansi' => $customer->klaim_garansi,
 
-                // --- PERBAIKAN LOGIKA PENGAMBILAN NAMA SPAREPART ---
                 'spareparts' => $customer->customerSpareparts->map(function ($cs) {
-                    // Prioritaskan nama dari tabel pivot ($cs->name) karena ini yang paling akurat
-                    // (sesuai dengan yang dikirim frontend saat update).
-                    // Jika $cs->name kosong (misal data lama), baru gunakan nama dari relasi.
                     $name = $cs->name ?: ($cs->sparepart ? $cs->sparepart->name : 'Sparepart tidak ditemukan');
 
                     return [
@@ -186,7 +180,7 @@ class CustomerController extends Controller
             'motor' => 'sometimes|nullable|string',
             'spareparts' => 'sometimes|array',
             'spareparts.*.sparepart_id' => 'nullable|integer|exists:spareparts,id',
-            'spareparts.*.name' => 'required|string|max:255', // Nama sekarang wajib ada di request
+            'spareparts.*.name' => 'required|string|max:255',
             'spareparts.*.gerai_id' => 'required_with:spareparts|exists:gerais,id',
             'spareparts.*.qty' => 'required_with:spareparts|integer|min:1',
             'spareparts.*.price' => 'required_with:spareparts|numeric',
@@ -196,31 +190,24 @@ class CustomerController extends Controller
         try {
             DB::beginTransaction();
 
-            // Update data customer utama (kecuali spareparts)
             $customer->update($request->except('spareparts'));
 
-            // Handle spareparts jika ada dalam request
             if ($request->has('spareparts')) {
-                // Hapus semua entri sparepart lama untuk sinkronisasi
                 $customer->customerSpareparts()->delete();
 
-                // Loop dan buat ulang semua entri sparepart
                 foreach ($validated['spareparts'] as $sparepart) {
 
-                    // --- PERBAIKAN LOGIKA PENYIMPANAN NAMA ---
-                    // Simpan semua data dari frontend, TERMASUK NAMA, ke dalam tabel pivot.
                     CustomerSparepart::create([
                         'customer_id'  => $customer->id,
                         'gerai_id'     => $sparepart['gerai_id'],
                         'qty'          => $sparepart['qty'],
                         'price'        => $sparepart['price'],
                         'sparepart_id' => $sparepart['sparepart_id'],
-                        'name'         => $sparepart['name'], // SELALU simpan nama dari request
+                        'name'         => $sparepart['name'],
                     ]);
                 }
             }
 
-            // Hitung ulang total harga sparepart setelah perubahan
             $totalHargaSparepart = $customer->customerSpareparts()->sum(DB::raw('qty * price'));
             $customer->update([
                 'harga_sparepart' => $totalHargaSparepart,

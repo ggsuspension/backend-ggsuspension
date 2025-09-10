@@ -19,8 +19,7 @@ class ExpenseController extends Controller
         try {
             $geraiId = $request->query('gerai_id');
 
-            // Validasi parameter
-            if (!$geraiId ) {
+            if (!$geraiId) {
                 Log::error('Missing required parameters for getAllExpenses', [
                     'gerai_id' => $geraiId,
                 ]);
@@ -30,7 +29,6 @@ class ExpenseController extends Controller
             $data = Expense::where('gerai_id', $geraiId)
                 ->get();
 
-            // Bungkus data dalam format yang konsisten
             return response()->json(['data' => $data]);
         } catch (\Exception $e) {
             Log::error('Get All Expenses failed:', [
@@ -49,7 +47,6 @@ class ExpenseController extends Controller
             $startDate = $request->query('startDate');
             $endDate = $request->query('endDate');
 
-            // Validasi parameter
             if (!$geraiId || !$startDate || !$endDate) {
                 Log::error('Missing required parameters for getAllExpenses', [
                     'gerai_id' => $geraiId,
@@ -59,7 +56,6 @@ class ExpenseController extends Controller
                 return response()->json(['error' => 'Missing required parameters'], 400);
             }
 
-            // Konversi tanggal untuk memastikan format yang benar
             $startDate = \Carbon\Carbon::parse($startDate)->startOfDay();
             $endDate = \Carbon\Carbon::parse($endDate)->endOfDay();
 
@@ -78,7 +74,6 @@ class ExpenseController extends Controller
                 'data' => $data->toArray(),
             ]);
 
-            // Bungkus data dalam format yang konsisten
             return response()->json(['data' => $data]);
         } catch (\Exception $e) {
             Log::error('Get All Expenses failed:', [
@@ -177,17 +172,17 @@ class ExpenseController extends Controller
                     'totalAmount' => 'required|numeric|min:0',
                     'date' => 'required|date',
                 ]);
-                
+
                 $expense = Expense::create([
                     'gerai_id' => $validated['geraiId'],
                     'category' => $validated['category'],
-                    'detail' => $validated['detail'] ,
-                    'qty' => $validated['qty'] ,
+                    'detail' => $validated['detail'],
+                    'qty' => $validated['qty'],
                     'amount' => $validated['amount'],
                     'totalAmount' => $validated['totalAmount'],
                     'date' => Carbon::parse($validated['date'])->startOfDay(),
                 ]);
-                Log::info("Expense detail",[ $expense->detail]);
+                Log::info("Expense detail", [$expense->detail]);
 
                 if ($validated['geraiId']) {
                     Log::info("Dispatching CalculateDailyNetRevenue", [
@@ -247,7 +242,6 @@ class ExpenseController extends Controller
                     'date' => Carbon::parse($validated['date'])->startOfDay(),
                 ]);
 
-                // Trigger update pendapatan harian jika gerai_id atau date berubah
                 $newGeraiId = $validated['geraiId'];
                 $newDate = Carbon::parse($validated['date'])->toDateString();
 
