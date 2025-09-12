@@ -206,13 +206,13 @@ class AntrianController extends Controller
         }
     }
 
-    public function cancelOrder($id): JsonResponse
+    public function cancelOrder($id, Request $request): JsonResponse
     {
         try {
             Customer::find($id)->update([
                 'status' => "CANCEL",
+                'data_lainnya' => $request->all()
             ]);
-
             return response()->json([
                 'message' => 'Pengerjaan berhasil dibatalkan dan stok seal dikembalikan',
             ], 200);

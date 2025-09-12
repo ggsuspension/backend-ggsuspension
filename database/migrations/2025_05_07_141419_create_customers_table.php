@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string("bagian_motor")->nullable();
             $table->string("bagian_motor2")->nullable();
             $table->string("motor")->nullable();
+            $table->json("data_lainnya")->nullable();
             $table->timestamps();
         });
     }

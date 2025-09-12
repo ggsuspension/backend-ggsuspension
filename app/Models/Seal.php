@@ -8,6 +8,7 @@ class Seal extends Model
 {
     protected $table = 'seals';
     protected $guarded = ['id'];
+
     public function motor()
     {
         return $this->belongsTo(Motor::class, 'motor_id');
