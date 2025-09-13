@@ -143,6 +143,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::prefix('seals')->middleware(['auth:api', 'role:ADMIN,GUDANG,CEO,FINANCE'])->group(function () {
+        Route::post('/create', [SealController::class, 'store']);
         Route::put('/update/{seal}', [SealController::class, 'updateSeal']);
         Route::delete('/delete/{id}', [SealController::class, 'deleteSeal']);
         Route::post('/stock-requests', [StockRequestController::class, 'requestSeal']);
