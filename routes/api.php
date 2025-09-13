@@ -162,3 +162,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('user', UserController::class);
 });
+
+
+

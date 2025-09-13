@@ -37,9 +37,8 @@ class CustomerController extends Controller
                 'sumber_info' => $customer->sumber_info,
                 'sudah_chat' => $customer->sudah_chat,
                 'created_at' => $customer->created_at,
-                'keterangan' => $customer->keterangan,
+                'data_lainnya' => $customer->data_lainnya,
                 'klaim_garansi' => $customer->klaim_garansi,
-
                 'spareparts' => $customer->customerSpareparts->map(function ($cs) {
                     $name = $cs->name ?: ($cs->sparepart ? $cs->sparepart->name : 'Sparepart tidak ditemukan');
 
