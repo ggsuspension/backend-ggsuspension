@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
 use App\Models\Customer;
-use App\Models\DailyNetRevenue;
-use App\Models\Gerai;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,8 +11,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Ramsey\Uuid\Uuid;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AntrianController extends Controller
 {

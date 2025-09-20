@@ -167,9 +167,8 @@ class ExpenseController extends Controller
                     'geraiId' => 'nullable|exists:gerais,id',
                     'category' => 'required|string',
                     'detail' => 'string|max:255',
-                    'qty' => 'required|numeric|min:0',
+                    'qty' => 'nullable|numeric|min:0',
                     'amount' => 'required|numeric|min:0',
-                    'totalAmount' => 'required|numeric|min:0',
                     'date' => 'required|date',
                 ]);
 
@@ -179,7 +178,6 @@ class ExpenseController extends Controller
                     'detail' => $validated['detail'],
                     'qty' => $validated['qty'],
                     'amount' => $validated['amount'],
-                    'totalAmount' => $validated['totalAmount'],
                     'date' => Carbon::parse($validated['date'])->startOfDay(),
                 ]);
                 Log::info("Expense detail", [$expense->detail]);
@@ -198,7 +196,6 @@ class ExpenseController extends Controller
                     'category' => $expense->category,
                     'qty' => $expense->qty,
                     'detail' => $expense->detail,
-                    'totalAmount' => (float) $expense->totalAmount,
                     'date' => $expense->date->format('Y-m-d\TH:i:s.v\Z'),
                 ], 200);
             } catch (\Illuminate\Validation\ValidationException $e) {
