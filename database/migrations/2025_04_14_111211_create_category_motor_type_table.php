@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('motors', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
+        Schema::create('category_motor_type', function (Blueprint $table) {
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->foreignId('motor_type_id')->constrained('motor_types')->onDelete('cascade');
-            $table->timestamps();
 
-            $table->index('motor_type_id');
+            $table->primary(['category_id', 'motor_type_id']);
         });
     }
 
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('motors');
+        Schema::dropIfExists('category_motor_type');
     }
 };

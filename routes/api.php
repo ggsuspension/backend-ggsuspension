@@ -1,21 +1,28 @@
 <?php
 
 use App\Http\Controllers\AntrianController;
+use App\Http\Controllers\ServicePackageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerMotorController;
 use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\CustomerSparepartController;
+use App\Http\Controllers\CustomerVehicleController;
 use App\Http\Controllers\DailyNetRevenueController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\GeraiController;
 use App\Http\Controllers\HistorySparepartController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\KomstirController;
 use App\Http\Controllers\MotorController;
 use App\Http\Controllers\MotorPartController;
+use App\Http\Controllers\MotorTypeController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SealController;
 use App\Http\Controllers\ServiceCustomerController;
+use App\Http\Controllers\ServiceQueueController;
 use App\Http\Controllers\StockRequestController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\UserController;
@@ -29,6 +36,19 @@ Route::post('/orders/create', [OrderController::class, 'store']);
 Route::get('/customers/{customer}', [CustomerController::class, 'show']);
 Route::post('/customers/{id}/claim-warranty', [CustomerController::class, 'claimWarranty']);
 Route::get('/customers', [CustomerController::class, 'getByDateRange']);
+
+// ROUTE SERVICE PACKAGE
+Route::get('/packages-for-motor/{motor}', [ServicePackageController::class, 'getPackagesForMotor']);
+Route::apiResource('/service-packages', ServicePackageController::class);
+Route::apiResource('/motor-types', MotorTypeController::class);
+
+Route::get('/seals-by-category', [SealController::class, 'getByCategoryAndMotor']);
+Route::get('/komstir-pricing/{motor}', [KomstirController::class, 'getPricesByMotor']);
+Route::get('/customer-profiles/search', [CustomerProfileController::class, 'search']);
+Route::get('customer-profiles/search-by-plat', [CustomerProfileController::class, 'searchByPlat']);
+Route::apiResource('/customer-profiles', CustomerProfileController::class);
+Route::apiResource('/customer-motors', CustomerMotorController::class);
+Route::apiResource('/service-queues', ServiceQueueController::class);
 
 Route::prefix('antrian')->group(function () {
     Route::get('/', [AntrianController::class, 'getAntrianByGeraiId']);
@@ -93,7 +113,7 @@ Route::prefix('daily-net-revenue')->group(function () {
 });
 
 Route::resource('service-customer', ServiceCustomerController::class);
-Route::resource('customer-profile', CustomerProfileController::class);
+// Route::resource('customer-profile', CustomerProfileController::class);
 Route::resource('customer', CustomerController::class);
 Route::resource('image', ImageController::class);
 Route::resource("customer-sparepart", CustomerSparepartController::class);
@@ -162,6 +182,3 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('user', UserController::class);
 });
-
-
-

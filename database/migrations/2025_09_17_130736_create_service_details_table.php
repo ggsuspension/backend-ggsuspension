@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('motor_parts', function (Blueprint $table) {
+        Schema::create('service_details', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('type');
+            $table->string('layanan');
+            $table->string('part_motor');
             $table->string('cc_range')->nullable();
-            $table->foreignId('motor_type_id')->constrained('motor_types')->onDelete('cascade');
+            $table->string('warranty')->nullable();
+            $table->unsignedInteger('price');
+            $table->json('sparepart_include')->nullable();
             $table->timestamps();
-
-            $table->unique(['name', 'motor_type_id', 'cc_range'], 'name_motortype_cc_unique');
         });
     }
 
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('motor_parts');
+        Schema::dropIfExists('service_details');
     }
 };

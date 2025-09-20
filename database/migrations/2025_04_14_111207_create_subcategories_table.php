@@ -14,11 +14,7 @@ return new class extends Migration
         Schema::create('subcategories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('img_path')->nullable();
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->timestamps();
-            $table->unique(['name', 'category_id'], 'name_category_unique');
-            $table->index('category_id');
         });
     }
 

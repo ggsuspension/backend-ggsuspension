@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreign('motor_id')->references('id')->on('motors')->onDelete('cascade');
             $table->foreignId('gerai_id')->constrained()->onDelete('cascade');
             $table->index('gerai_id');
+            $table->string('service_type');
             $table->timestamps();
         });
     }

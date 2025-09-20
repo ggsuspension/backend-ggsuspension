@@ -3,22 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subcategory extends Model
 {
-    protected $fillable = ['name', 'category_id'];
+    protected $table = 'subcategories';
+    protected $guarded = ['id'];
 
-    public function category()
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'category_motor_type');
     }
 
-    public function motorParts()
+    public function motors(): HasMany
+    {
+        return $this->hasMany(Motor::class);
+    }
+
+    public function motorParts(): HasMany
     {
         return $this->hasMany(MotorPart::class);
-    }
-      public function getImageUrlAttribute()
-    {
-        return asset('storage/' . $this->path);
     }
 }

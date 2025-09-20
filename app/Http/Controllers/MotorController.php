@@ -10,7 +10,7 @@ class MotorController extends Controller
 {
     public function getAllMotors(): JsonResponse
     {
-        $motors = Motor::with(['seals', 'motorParts'])->get();
+        $motors = Motor::with('motorType')->get();
         return response()->json($motors);
     }
 
@@ -21,8 +21,10 @@ class MotorController extends Controller
 
     public function createMotor(Request $request): JsonResponse
     {
+        // PERBAIKAN: Tambahkan motor_type_id ke validasi
         $validated = $request->validate([
             'name' => 'required|string|unique:motors',
+            'motor_type_id' => 'required|exists:motor_types,id'
         ]);
 
         $motor = Motor::create($validated);
@@ -33,6 +35,7 @@ class MotorController extends Controller
     {
         $validated = $request->validate([
             'name' => 'string|unique:motors,name,' . $motor->id,
+            'motor_type_id' => 'sometimes|required|exists:motor_types,id'
         ]);
 
         $motor->update($validated);

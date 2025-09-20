@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_profiles', function (Blueprint $table) {
+        Schema::create('customer_motors', function (Blueprint $table) {
             $table->id();
-            $table->string("nama");
-            $table->string("noWA");
-            $table->string("sudah_chat");
-            $table->string("sumber_info");
+            $table->foreignId('customer_profile_id')
+                ->constrained('customer_profiles')
+                ->cascadeOnDelete();
+            $table->string("nama_motor");
+            $table->string("jenis_motor");
+            $table->string("plat_motor");
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_profiles');
+        Schema::dropIfExists('customer_motors');
     }
 };

@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class CustomerProfile extends Model
+class CustomerMotor extends Model
 {
     use HasFactory;
 
@@ -15,7 +16,7 @@ class CustomerProfile extends Model
      *
      * @var string
      */
-    protected $table = 'customer_profiles';
+    protected $table = 'customer_motors';
 
     /**
      * The attributes that are mass assignable.
@@ -23,22 +24,22 @@ class CustomerProfile extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'nama',
-        'noWA',
-        'sudah_chat',
-        'sumber_info',
+        'customer_profile_id',
+        'nama_motor',
+        'jenis_motor',
+        'plat_motor',
     ];
 
     /**
-     * Get all of the service queues for the CustomerProfile.
+     * Get all of the service queues for the CustomerMotor.
      */
     public function serviceQueues(): HasMany
     {
         return $this->hasMany(ServiceQueue::class);
     }
 
-    public function motors(): HasMany
+    public function customerProfile(): BelongsTo
     {
-        return $this->hasMany(CustomerMotor::class);
+        return $this->belongsTo(CustomerProfile::class);
     }
 }

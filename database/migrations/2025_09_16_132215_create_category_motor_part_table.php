@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_profiles', function (Blueprint $table) {
-            $table->id();
-            $table->string("nama");
-            $table->string("noWA");
-            $table->string("sudah_chat");
-            $table->string("sumber_info");
+        Schema::create('category_motor_part', function (Blueprint $table) {
+            $table->foreignId('category_id')->constrained()->onDelete('cascade');
+            $table->foreignId('motor_part_id')->constrained()->onDelete('cascade');
+            $table->integer('price');
             $table->timestamps();
+
+            $table->primary(['category_id', 'motor_part_id']);
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_profiles');
+        Schema::dropIfExists('category_motor_part');
     }
 };

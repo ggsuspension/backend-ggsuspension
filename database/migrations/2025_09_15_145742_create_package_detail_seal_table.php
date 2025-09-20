@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customer_profiles', function (Blueprint $table) {
+        Schema::create('package_detail_seal', function (Blueprint $table) {
             $table->id();
-            $table->string("nama");
-            $table->string("noWA");
-            $table->string("sudah_chat");
-            $table->string("sumber_info");
+            $table->foreignId('package_detail_id')->constrained()->onDelete('cascade');
+            $table->foreignId('seal_id')->constrained('seals')->onDelete('cascade');
+            $table->integer('quantity')->default(1);
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customer_profiles');
+        Schema::dropIfExists('package_detail_seal');
     }
 };

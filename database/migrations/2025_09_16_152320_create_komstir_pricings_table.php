@@ -11,24 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('spareparts', function (Blueprint $table) {
+        Schema::create('komstir_pricings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('motor_id')->constrained('motors')->onDelete('cascade');
             $table->string('name');
-            $table->string('category');
+            $table->string('part_type')->nullable();
             $table->integer('price');
-            $table->integer('purchase_price');
-            $table->integer('qty');
-            $table->unsignedBigInteger('motor_id')->nullable();
-            $table->foreign('motor_id')->references('id')->on('motors')->onDelete('cascade');
-            $table->string('service_type');
             $table->timestamps();
+
+            $table->unique(['motor_id', 'name', 'part_type']);
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('spareparts');
+        Schema::dropIfExists('komstir_pricings');
     }
 };

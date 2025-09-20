@@ -6,6 +6,7 @@ use App\Models\Seal;
 use App\Models\Sparepart;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class SealController extends Controller
@@ -102,5 +103,37 @@ class SealController extends Controller
     {
         $seal->delete();
         return response()->json(null, 204);
+    }
+
+    /**
+     * Mengambil daftar sparepart (seals) yang tersedia di gerai user
+     * berdasarkan kategori dan ID motor.
+     */
+    public function getByCategoryAndMotor(Request $request)
+    {
+        // 1. Validasi input dari request frontend
+        $validated = $request->validate([
+            'category' => 'required|string',
+            'motor_id' => 'required|integer|exists:motors,id',
+        ]);
+
+        // 2. Dapatkan gerai_id dari user yang sedang login
+        // PENTING: Pastikan model User Anda memiliki informasi gerai_id.
+        $geraiId = Auth::user()->gerai_id;
+
+        if (!$geraiId) {
+            // Beri respons error jika user tidak terasosiasi dengan gerai manapun
+            return response()->json(['message' => 'User tidak terhubung dengan gerai.'], 403);
+        }
+
+        // 3. Lakukan query ke tabel 'seals'
+        $availableSeals = Seal::where('category', $validated['category'])
+            ->where('motor_id', $validated['motor_id'])
+            ->where('gerai_id', $geraiId)
+            ->where('qty', '>', 0) // PENTING: Hanya ambil part yang stoknya ada
+            ->get();
+
+        // 4. Kirim hasilnya sebagai respons JSON
+        return response()->json($availableSeals);
     }
 }
